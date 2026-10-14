@@ -184,7 +184,9 @@ export default function FunnelA() {
       currentStep={stepNumber}
       totalSteps={totalSteps}
       stepLabel={stepLabel}
-      funnelTitle="ATHLETIC DIAGNOSTIC & ENROLLMENT PROTOCOL"
+      funnelTitle="FITNESS DIAGNOSTIC ASSESSMENT"
+      ctaText={step === "assessment" ? "START ASSESSMENT" : undefined}
+      onCtaClick={step === "assessment" ? () => window.scrollTo({ top: 550, behavior: "smooth" }) : undefined}
       onBack={
         step === "bands"
           ? () => setStep("assessment")

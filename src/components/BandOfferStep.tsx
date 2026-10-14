@@ -1,6 +1,6 @@
 import { getFunnelApiUrl } from "../lib/funnelEngine";
-import React, { useState, useEffect } from "react";
-import { Package, Truck, Check, AlertCircle, ArrowRight, ShieldCheck, Lock } from "lucide-react";
+import React, { useState, useEffect, useRef } from "react";
+import { Package, Truck, Check, AlertCircle, ArrowRight, Sparkles } from "lucide-react";
 
 interface BandOfferStepProps {
   funnelId: "funnel_a" | "funnel_b";
@@ -27,6 +27,8 @@ export default function BandOfferStep({
   } | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  const formRef = useRef<HTMLDivElement>(null);
 
   // Shipping Form State
   const [name, setName] = useState(customerName);
@@ -64,6 +66,12 @@ export default function BandOfferStep({
       mounted = false;
     };
   }, [onDecline]);
+
+  const scrollToClaim = () => {
+    if (formRef.current) {
+      formRef.current.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  };
 
   const handleClaim = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -131,7 +139,6 @@ export default function BandOfferStep({
       throw new Error(data.error || `Checkout returned status ${res.status}`);
     } catch (err: any) {
       console.warn("[BandOfferStep] Checkout warning:", err);
-      // Fallback for standalone preview or test mode so tester can audit full flow
       if (
         window.location.hostname === "localhost" ||
         window.location.hostname.includes("vercel.app") ||
@@ -150,67 +157,102 @@ export default function BandOfferStep({
   const remainingKits = inventory ? Math.max(0, inventory.remaining) : 30;
 
   return (
-    <div className="w-full max-w-3xl mx-auto py-2 sm:py-4">
-      {/* ── Scarcity & Offer Header ────────────────────────────────────────── */}
-      <div className="text-center mb-8 sm:mb-10">
-        <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-blue-50 border border-blue-200 text-[#0A3161] text-xs font-['DM_Mono'] font-bold uppercase tracking-[0.25em] mb-4 shadow-2xs">
-          <Package className="w-3.5 h-3.5 text-[#0A3161]" />
-          <span>PHYSICAL HARDWARE ALLOCATION • $0 PRODUCT PROMOTION</span>
+    <div className="w-full">
+      {/* ── SECTION 01 — HERO (Exact Match to foundation.bigronjones.com) ── */}
+      <section className="relative pt-12 pb-16 sm:pt-16 sm:pb-20 md:pt-20 md:pb-24 overflow-hidden bg-gradient-to-b from-blue-50/50 via-white to-white border-b border-slate-200 text-center">
+        {/* Subtle radial glow in brand blue */}
+        <div className="absolute inset-0 pointer-events-none">
+          <div className="absolute -top-40 left-1/2 -translate-x-1/2 w-[750px] h-[550px] bg-[#0A3161]/5 rounded-full blur-[140px]" />
         </div>
 
-        <h1 className="font-['Bebas_Neue'] text-4xl sm:text-6xl uppercase tracking-[0.02em] text-slate-900 leading-[0.95] mb-2">
-          CLAIM YOUR <span className="text-[#0A3161]">FREE RESISTANCE BANDS</span>
-        </h1>
-        <p className="font-['DM_Sans'] text-base sm:text-lg text-slate-600 max-w-xl mx-auto leading-relaxed">
-          Official BigRonJones® Heavy-Duty Resistance Band Set ($49 Retail Value). You pay only $15 for insured USPS domestic shipping and handling.
-        </p>
-
-        {/* Live Inventory Counter Badge */}
-        <div className="mt-5 inline-flex items-center gap-3 px-6 py-2.5 rounded-2xl bg-amber-50 border-2 border-amber-300 text-amber-950 shadow-sm">
-          <span className="w-3 h-3 rounded-full bg-[#B31942] animate-pulse" />
-          <span className="font-['DM_Mono'] text-xs sm:text-sm font-bold uppercase tracking-wider">
-            Live Inventory: <strong className="text-[#B31942] text-sm sm:text-base font-black">{remainingKits} of 30</strong> Kits Remaining
-          </span>
-        </div>
-      </div>
-
-      {error && (
-        <div className="mb-6 p-4 rounded-xl bg-red-50 border border-red-200 text-red-700 text-sm font-['DM_Sans'] flex items-center gap-3">
-          <AlertCircle className="w-5 h-5 shrink-0 text-red-600" />
-          <span>{error}</span>
-        </div>
-      )}
-
-      {/* ── Product Showcase ──────────────────────────────────────────────── */}
-      <div className="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 shadow-xl mb-8">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
-          {/* Image */}
-          <div className="relative rounded-2xl overflow-hidden bg-slate-100 border border-slate-200 aspect-4/3 flex items-center justify-center p-2 shadow-inner">
-            <img
-              src="/images/ron/band-training.jpg"
-              alt="BigRonJones Heavy Duty Resistance Band Set"
-              className="w-full h-full object-cover rounded-xl"
-              onError={(e) => {
-                (e.target as HTMLImageElement).src = "/images/ron/band-coaching.jpg";
-              }}
-            />
-            <div className="absolute top-3 left-3 px-3 py-1 rounded-full bg-[#0A3161] text-white text-[10px] font-['DM_Mono'] font-bold tracking-widest shadow-md">
-              OFFICIAL EQUIPMENT
-            </div>
-            <div className="absolute bottom-3 right-3 px-3 py-1 rounded-full bg-white/95 backdrop-blur-md text-[11px] font-['DM_Mono'] font-bold text-slate-800 border border-slate-200 shadow-sm">
-              $0 KIT + $15 S&H
-            </div>
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+          {/* Eyebrow Badge */}
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-blue-200/80 bg-white text-[#0A3161] font-['DM_Mono'] text-[11px] sm:text-xs uppercase tracking-widest mb-6 shadow-sm">
+            <Sparkles size={13} className="text-[#0A3161]" />
+            <span>BIGRONJONES · THE RESISTANCE PROTOCOL</span>
           </div>
 
-          {/* Details & Specs */}
-          <div>
-            <h2 className="font-['Bebas_Neue'] text-2xl sm:text-3xl text-slate-900 tracking-wide uppercase mb-2">
-              BIGRONJONES® HEAVY-DUTY BAND SET
-            </h2>
-            <p className="font-['DM_Sans'] text-xs sm:text-sm text-slate-600 mb-5 leading-relaxed">
-              Engineered for genuine progressive overload, joint-friendly biomechanics, and travel training. Eliminates every excuse whether training at home, on business, or in the gym.
-            </p>
+          {/* Headline */}
+          <h1 className="font-['Bebas_Neue'] text-5xl sm:text-7xl md:text-8xl tracking-tight leading-[0.92] text-slate-900 mb-6 uppercase">
+            EVERYTHING STARTS
+            <br />
+            <span className="text-[#B31942]">SOMEWHERE.</span>
+          </h1>
 
+          {/* Supporting Copy */}
+          <div className="max-w-2xl mx-auto mb-8 space-y-3 font-['DM_Sans'] text-base sm:text-lg md:text-xl text-slate-600 leading-relaxed">
+            <p>
+              A strong body does not require a complicated beginning.<br />
+              Start with the tool, the structure, and the willingness to work.
+            </p>
+          </div>
+
+          {/* Primary CTA */}
+          <div className="flex flex-col items-center justify-center gap-3 max-w-md mx-auto w-full mb-10">
+            <button
+              type="button"
+              onClick={scrollToClaim}
+              className="w-full bg-[#B31942] hover:bg-[#8e1032] active:scale-[0.98] text-white font-['Bebas_Neue'] text-2xl sm:text-3xl tracking-wider py-4 px-8 rounded-xl uppercase transition-all flex items-center justify-center gap-3 shadow-xl shadow-red-900/25 cursor-pointer"
+            >
+              <span>GET MY BANDS</span>
+              <ArrowRight size={22} />
+            </button>
+
+            <p className="font-['DM_Mono'] text-xs sm:text-sm text-slate-500 tracking-wider">
+              Official BigRonJones® Resistance Band Kit · Strictly limited to 30 Kits.
+            </p>
+          </div>
+
+          {/* Verified Scarcity & Offer Allocation Card */}
+          <div className="max-w-xl mx-auto bg-white border border-slate-200 rounded-2xl p-6 sm:p-8 shadow-xl text-left">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pb-6 border-b border-slate-100">
+              <div>
+                <span className="text-[10px] font-['DM_Mono'] uppercase tracking-widest text-[#0A3161] font-bold block mb-1">
+                  OFFICIAL OFFER
+                </span>
+                <h2 className="font-['Bebas_Neue'] text-2xl sm:text-3xl text-slate-900 tracking-wide uppercase leading-tight">
+                  BIGRONJONES RESISTANCE BAND KIT
+                </h2>
+              </div>
+              <div className="sm:text-right">
+                <span className="text-[10px] font-['DM_Mono'] uppercase tracking-widest text-slate-400 block mb-0.5">
+                  PRICE
+                </span>
+                <span className="font-['Bebas_Neue'] text-3xl sm:text-4xl text-[#0A3161] leading-none">
+                  FREE
+                </span>
+                <span className="text-xs text-slate-500 font-['DM_Mono'] block">+ S&amp;H ($15.00)</span>
+              </div>
+            </div>
+
+            {/* Scarcity Notice */}
+            <div className="my-6">
+              <div className="p-3.5 bg-amber-50 border border-amber-200 rounded-xl flex items-center justify-between gap-3 text-amber-900 font-['DM_Mono'] text-xs shadow-sm">
+                <div className="flex items-center gap-2">
+                  <Package size={16} className="text-amber-600 shrink-0" />
+                  <span className="font-bold tracking-wider uppercase">
+                    {remainingKits} OF 30 KITS AVAILABLE
+                  </span>
+                </div>
+                <span className="text-[10px] uppercase font-bold text-amber-700 bg-amber-100/80 px-2 py-0.5 rounded-full">
+                  STRICT ALLOCATION
+                </span>
+              </div>
+            </div>
+
+            {/* Product Image */}
+            <div className="rounded-xl overflow-hidden aspect-4/3 bg-slate-100 border border-slate-200 mb-6">
+              <img
+                src="/images/ron/band-training.jpg"
+                alt="BigRonJones Heavy Duty Resistance Band Set"
+                className="w-full h-full object-cover"
+                onError={(e) => {
+                  (e.target as HTMLImageElement).src = "/images/ron/band-coaching.jpg";
+                }}
+              />
+            </div>
+
+            {/* Inclusions */}
             <ul className="space-y-2.5 text-xs sm:text-sm text-slate-700 font-medium mb-6 font-['DM_Sans']">
               <li className="flex items-center gap-2.5">
                 <Check className="w-4 h-4 text-emerald-600 shrink-0" />
@@ -218,7 +260,7 @@ export default function BandOfferStep({
               </li>
               <li className="flex items-center gap-2.5">
                 <Check className="w-4 h-4 text-emerald-600 shrink-0" />
-                <span>Full progressive tension range (10 lbs - 50+ lbs)</span>
+                <span>Full progressive tension range (10 lbs – 50+ lbs)</span>
               </li>
               <li className="flex items-center gap-2.5">
                 <Check className="w-4 h-4 text-emerald-600 shrink-0" />
@@ -228,52 +270,42 @@ export default function BandOfferStep({
                 <Check className="w-4 h-4 text-emerald-600 shrink-0" />
                 <span>Ships via insured USPS Priority within 3-5 business days</span>
               </li>
-              <li className="flex items-center gap-2.5">
-                <Check className="w-4 h-4 text-emerald-600 shrink-0" />
-                <span>Strict limit: 1 promotional kit per household</span>
-              </li>
             </ul>
 
-            {/* Pricing Breakdown */}
-            <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-2 text-xs font-['DM_Mono']">
-              <div className="flex justify-between text-slate-500">
-                <span>Resistance Band Kit:</span>
-                <span className="line-through text-slate-400">$49.00</span>
-              </div>
-              <div className="flex justify-between text-emerald-700 font-bold">
-                <span>Promotional Gear Credit:</span>
-                <span>-$49.00 (100% FREE)</span>
-              </div>
-              <div className="flex justify-between text-slate-700 font-semibold pt-1 border-t border-slate-200">
-                <span>Insured USPS Tracked Shipping:</span>
-                <span>$15.00</span>
-              </div>
-              <div className="flex justify-between text-[#0A3161] font-black text-sm pt-1 border-t border-slate-200">
-                <span>TOTAL DUE TODAY:</span>
-                <span className="text-[#B31942] text-base font-black">$15.00</span>
-              </div>
-            </div>
+            <button
+              type="button"
+              onClick={scrollToClaim}
+              className="w-full bg-[#B31942] hover:bg-[#8e1032] active:scale-[0.98] text-white font-['Bebas_Neue'] text-xl sm:text-2xl tracking-wider py-3.5 px-6 rounded-xl uppercase transition-all flex items-center justify-center gap-2 shadow-lg shadow-red-900/20 cursor-pointer"
+            >
+              <span>CLAIM YOUR BAND SET</span>
+              <ArrowRight size={18} />
+            </button>
           </div>
         </div>
-      </div>
+      </section>
 
-      {/* ── Shipping & Claim Form ─────────────────────────────────────────── */}
-      <form onSubmit={handleClaim} className="bg-white border-2 border-[#0A3161]/30 rounded-3xl p-6 sm:p-8 shadow-2xl">
-        <div className="flex items-center gap-3 pb-4 mb-6 border-b border-slate-200">
-          <div className="w-10 h-10 rounded-xl bg-blue-50 border border-blue-100 flex items-center justify-center text-[#0A3161] shrink-0">
-            <Truck className="w-5 h-5 text-[#0A3161]" />
-          </div>
-          <div>
-            <h3 className="font-['Bebas_Neue'] text-2xl sm:text-3xl text-slate-900 tracking-wide uppercase leading-none">
-              WHERE SHOULD WE SHIP YOUR RESISTANCE BANDS?
-            </h3>
-            <p className="font-['DM_Sans'] text-xs sm:text-sm text-slate-500 mt-1">
-              Provide your delivery address below for immediate USPS dispatch.
-            </p>
-          </div>
+      {/* ── SECTION 02 — SHIPPING FULFILLMENT FORM ── */}
+      <section ref={formRef} className="py-16 sm:py-20 md:py-24 px-4 sm:px-6 lg:px-8 max-w-2xl mx-auto">
+        <div className="text-center mb-8">
+          <span className="font-['DM_Mono'] text-xs font-bold uppercase tracking-[0.25em] text-[#0A3161] block mb-2">
+            STEP 01 — DELIVERY DESTINATION
+          </span>
+          <h3 className="font-['Bebas_Neue'] text-3xl sm:text-5xl text-slate-900 tracking-wide uppercase leading-none">
+            WHERE SHOULD WE SHIP YOUR BANDS?
+          </h3>
+          <p className="font-['DM_Sans'] text-sm sm:text-base text-slate-600 mt-2">
+            Provide your mailing address below. Kit ships directly to you via USPS Priority.
+          </p>
         </div>
 
-        <div className="space-y-4 mb-6">
+        {error && (
+          <div className="mb-6 p-4 rounded-xl bg-red-50 border border-red-200 text-red-700 text-sm font-['DM_Sans'] flex items-center gap-3">
+            <AlertCircle className="w-5 h-5 shrink-0 text-red-600" />
+            <span>{error}</span>
+          </div>
+        )}
+
+        <form onSubmit={handleClaim} className="bg-white border border-slate-200 rounded-3xl p-6 sm:p-10 shadow-xl space-y-5">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label className="block text-xs font-['DM_Mono'] font-bold uppercase tracking-wider text-slate-700 mb-1.5">
@@ -375,38 +407,43 @@ export default function BandOfferStep({
               />
             </div>
           </div>
-        </div>
 
-        {/* High-Converting Primary Red CTA */}
-        <button
-          type="submit"
-          disabled={loading}
-          className="w-full py-4 sm:py-5 bg-[#B31942] hover:bg-[#8e1032] text-white font-['Bebas_Neue'] text-2xl sm:text-3xl tracking-wider rounded-xl uppercase transition-all shadow-xl shadow-red-900/30 flex items-center justify-center gap-3 cursor-pointer group disabled:opacity-50 active:scale-[0.99]"
-        >
-          {loading ? (
-            <span>PREPARING SECURE CHECKOUT...</span>
-          ) : (
-            <>
-              <span>CLAIM MY FREE BANDS NOW (PAY $15 S&amp;H)</span>
-              <ArrowRight className="w-6 h-6 transition-transform group-hover:translate-x-1" />
-            </>
-          )}
-        </button>
+          {/* Pricing Breakdown */}
+          <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-2 text-xs font-['DM_Mono'] mt-6">
+            <div className="flex justify-between text-slate-500">
+              <span>Resistance Band Kit:</span>
+              <span className="line-through text-slate-400">$49.00</span>
+            </div>
+            <div className="flex justify-between text-emerald-700 font-bold">
+              <span>Promotional Equipment Credit:</span>
+              <span>-$49.00 (100% FREE)</span>
+            </div>
+            <div className="flex justify-between text-slate-700 font-semibold pt-1 border-t border-slate-200">
+              <span>Insured USPS Priority Shipping:</span>
+              <span>$15.00</span>
+            </div>
+            <div className="flex justify-between text-[#0A3161] font-black text-sm pt-1 border-t border-slate-200">
+              <span>TOTAL DUE TODAY:</span>
+              <span className="text-[#B31942] text-lg font-black">$15.00</span>
+            </div>
+          </div>
 
-        <div className="mt-4 flex flex-wrap items-center justify-center gap-4 text-slate-500 font-['DM_Mono'] text-[11px] uppercase tracking-wider">
-          <span className="flex items-center gap-1.5">
-            <Lock className="w-3.5 h-3.5 text-emerald-600" />
-            256-Bit SSL Encryption
-          </span>
-          <span>•</span>
-          <span className="flex items-center gap-1.5">
-            <ShieldCheck className="w-3.5 h-3.5 text-[#0A3161]" />
-            Official BigRonJones® Guarantee
-          </span>
-          <span>•</span>
-          <span>USPS Domestic Priority</span>
-        </div>
-      </form>
+          <button
+            type="submit"
+            disabled={loading}
+            className="w-full py-4 sm:py-5 bg-[#B31942] hover:bg-[#8e1032] active:scale-[0.98] text-white font-['Bebas_Neue'] text-2xl sm:text-3xl tracking-wider rounded-xl uppercase transition-all shadow-xl shadow-red-900/25 flex items-center justify-center gap-3 cursor-pointer group disabled:opacity-50 mt-6"
+          >
+            {loading ? (
+              <span>INITIALIZING SECURE CHECKOUT...</span>
+            ) : (
+              <>
+                <span>CLAIM MY FREE BANDS NOW (PAY $15 S&amp;H)</span>
+                <ArrowRight size={22} className="transition-transform group-hover:translate-x-1" />
+              </>
+            )}
+          </button>
+        </form>
+      </section>
     </div>
   );
 }

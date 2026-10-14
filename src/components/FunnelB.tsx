@@ -182,7 +182,9 @@ export default function FunnelB() {
       currentStep={stepNumber}
       totalSteps={totalSteps}
       stepLabel={stepLabel}
-      funnelTitle="RESISTANCE GEAR & ATHLETIC PROTOCOL"
+      funnelTitle="THE RESISTANCE PROTOCOL"
+      ctaText={step === "bands" ? "GET MY BANDS" : undefined}
+      onCtaClick={step === "bands" ? () => window.scrollTo({ top: 650, behavior: "smooth" }) : undefined}
       onBack={
         step === "assessment" && !bandsSoldOut
           ? () => setStep("bands")

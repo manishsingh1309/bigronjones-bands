@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { ArrowLeft, Lock, ShieldCheck } from "lucide-react";
+import { ArrowLeft, ArrowRight } from "lucide-react";
 
 interface FunnelShellProps {
   currentStep: number;
@@ -7,6 +7,8 @@ interface FunnelShellProps {
   stepLabel: string;
   funnelTitle?: string;
   onBack?: () => void;
+  ctaText?: string;
+  onCtaClick?: () => void;
   children: React.ReactNode;
 }
 
@@ -16,11 +18,18 @@ export default function FunnelShell({
   stepLabel,
   funnelTitle = "ATHLETIC DIAGNOSTIC & ENROLLMENT PROTOCOL",
   onBack,
+  ctaText,
+  onCtaClick,
   children,
 }: FunnelShellProps) {
+  const [scrolled, setScrolled] = useState(false);
   const [legalModal, setLegalModal] = useState<"privacy" | "terms" | "refund" | null>(null);
 
-  const progressPercent = Math.min(100, Math.round((currentStep / totalSteps) * 100));
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 30);
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -33,146 +42,221 @@ export default function FunnelShell({
   }, [legalModal]);
 
   return (
-    <div className="min-h-screen bg-[#F8FAFC] text-slate-900 flex flex-col font-sans selection:bg-[#0A3161] selection:text-white overflow-x-hidden antialiased">
-      {/* ── Top Announcement Bar (Official Old Glory Blue) ─────────────────── */}
-      <div className="bg-[#0A3161] text-white py-2 px-4 text-center border-b border-[#08274d]">
-        <div className="max-w-6xl mx-auto flex items-center justify-center gap-2 text-[11px] sm:text-xs font-['DM_Mono'] font-bold uppercase tracking-[0.2em]">
-          <span className="w-2 h-2 rounded-full bg-[#B31942] animate-pulse shrink-0" />
-          <span>OFFICIAL BIGRONJONES® PROTOCOL • LIMITED DIRECT ENROLLMENT ACCESS</span>
-        </div>
+    <div className="min-h-screen bg-white text-slate-900 flex flex-col font-sans selection:bg-[#0A3161] selection:text-white antialiased overflow-x-hidden">
+      {/* ══ 1. TOP BRAND BLUE TAGLINE BAR — Exact Match to BigRonJones®, The Standard, & The Foundation ══ */}
+      <div className="fixed top-0 left-0 right-0 z-[60] bg-[#0A3161] py-1.5 shadow-sm">
+        <p className="text-center font-['DM_Mono'] text-[9.5px] sm:text-[10.5px] uppercase tracking-[0.25em] sm:tracking-[0.3em] text-white font-medium px-2">
+          &ldquo;Practical Advice for Your Real World Goals.<span style={{ fontSize: "0.78em", verticalAlign: "super", fontWeight: 700, marginLeft: "0.08em" }}>®</span>&rdquo;
+        </p>
       </div>
 
-      {/* ── Strict Funnel Header (Clean Athletic Luxury White) ─────────────── */}
-      <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-slate-200/90 shadow-sm px-4 py-3 sm:px-6">
-        <div className="max-w-5xl mx-auto flex items-center justify-between gap-3">
-          {/* Brand & Optional Back */}
-          <div className="flex items-center gap-2 sm:gap-4 min-w-0">
+      {/* ══ 2. MAIN NAVBAR — Clean, Premium, Distraction-Free Brand Header ══ */}
+      <header
+        className={`fixed top-[28px] inset-x-0 z-50 transition-all duration-300 ${
+          scrolled
+            ? "bg-white/95 backdrop-blur-md border-b border-slate-200 shadow-sm py-2.5 md:py-3.5"
+            : "bg-white/90 backdrop-blur-sm border-b border-slate-100 py-3 md:py-4"
+        }`}
+      >
+        <div className="w-full flex h-14 sm:h-16 md:h-20 items-center justify-between px-4 sm:px-6 md:px-8 lg:px-10 xl:px-12 2xl:px-16 max-w-7xl mx-auto">
+          {/* Brand Avatar + BIGRONJONES® Wordmark */}
+          <div className="flex items-center gap-2.5 sm:gap-3.5 shrink-0 select-none">
             {onBack && (
               <button
                 type="button"
                 onClick={onBack}
-                className="p-2 min-h-[44px] min-w-[44px] rounded-xl text-slate-500 hover:text-[#0A3161] hover:bg-slate-100 transition-colors flex items-center justify-center cursor-pointer border border-slate-200"
-                aria-label="Go back to previous step"
+                className="p-2 min-h-[40px] min-w-[40px] rounded-lg text-slate-500 hover:text-[#0A3161] hover:bg-slate-100 transition-colors flex items-center justify-center cursor-pointer border border-slate-200 mr-1"
+                aria-label="Go back"
               >
-                <ArrowLeft className="w-5 h-5" />
+                <ArrowLeft className="w-4 h-4" />
               </button>
             )}
 
-            <div className="flex items-center gap-3 min-w-0">
+            <a
+              href="https://bigronjones.com"
+              className="flex items-center gap-2.5 sm:gap-3.5 group select-none cursor-pointer"
+            >
               <img
-                src="/images/ron/bigronjones.png"
-                alt="Big Ron Jones"
+                src="/images/ron/bigronjones.png?v=4"
+                alt="BigRonJones®"
                 onError={(e) => {
                   (e.target as HTMLImageElement).src = "/images/ron/ron-headshot.png";
                 }}
-                className="w-10 h-10 sm:w-11 sm:h-11 rounded-full border-2 border-[#0A3161] object-cover shadow-sm shrink-0"
+                className="h-8 w-8 sm:h-9 sm:w-9 md:h-10 md:w-10 select-none rounded-full border-2 border-[#0A3161]/70 object-cover object-center shadow-sm"
               />
-              <div className="flex flex-col min-w-0">
-                <span className="font-['Bebas_Neue'] text-2xl sm:text-3xl tracking-wider text-slate-900 leading-none">
-                  BIGRONJONES<span className="text-[#B31942]">®</span>
+              <span className="font-['Bebas_Neue'] text-2xl tracking-[0.08em] sm:text-3xl text-slate-900 select-none leading-none">
+                BIGRONJONES
+                <span
+                  style={{
+                    fontFamily: "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+                    fontSize: "0.32em",
+                    verticalAlign: "0.85em",
+                    lineHeight: 1,
+                    fontWeight: 800,
+                    letterSpacing: 0,
+                    marginLeft: "0.08em",
+                    display: "inline-block",
+                  }}
+                >
+                  ®
                 </span>
-                <span className="text-[9px] sm:text-[10px] uppercase font-['DM_Mono'] font-bold tracking-[0.2em] text-[#0A3161] truncate max-w-[160px] sm:max-w-none">
-                  {funnelTitle}
-                </span>
+              </span>
+            </a>
+          </div>
+
+          {/* Right Action: Clean Step Tracker or Primary Action Button */}
+          <div className="flex items-center gap-3">
+            {ctaText && onCtaClick ? (
+              <button
+                type="button"
+                onClick={onCtaClick}
+                className="inline-flex items-center justify-center rounded-lg bg-[#B31942] px-3.5 py-2 sm:px-5 sm:py-2.5 md:py-3 font-['DM_Mono'] text-[10px] sm:text-[11.5px] font-bold uppercase tracking-[0.08em] sm:tracking-[0.12em] text-white shadow-md shadow-red-900/25 hover:bg-[#8e1032] hover:shadow-red-900/35 transition-all duration-200 whitespace-nowrap active:scale-[0.98] cursor-pointer"
+              >
+                <span>{ctaText}</span>
+                <ArrowRight size={13} className="ml-1 sm:ml-1.5" />
+              </button>
+            ) : currentStep > 1 ? (
+              <div className="flex items-center gap-1.5 bg-slate-100/90 px-3.5 py-1.5 rounded-full border border-slate-200 text-xs font-['DM_Mono'] font-bold">
+                <span className="text-[#0A3161]">STEP {currentStep}</span>
+                <span className="text-slate-400">OF {totalSteps}</span>
               </div>
-            </div>
-          </div>
-
-          {/* Trust Badges & Step Tracker */}
-          <div className="flex items-center gap-2 sm:gap-4 text-xs font-['DM_Mono'] shrink-0">
-            <div className="hidden sm:flex items-center gap-1.5 bg-emerald-50 text-emerald-800 border border-emerald-200 px-3 py-1.5 rounded-full font-semibold shadow-xs">
-              <Lock className="w-3.5 h-3.5 text-emerald-600" />
-              <span>256-Bit SSL Encrypted</span>
-            </div>
-            <div className="flex items-center gap-1.5 bg-slate-100/90 px-3.5 py-1.5 rounded-full border border-slate-300/80 font-bold">
-              <span className="text-[#B31942]">STEP {currentStep}</span>
-              <span className="text-slate-400">OF {totalSteps}</span>
-            </div>
-          </div>
-        </div>
-
-        {/* ── Progress Bar ────────────────────────────────────────────────── */}
-        <div className="max-w-5xl mx-auto mt-3">
-          <div className="flex items-center justify-between text-[11px] font-['DM_Mono'] font-bold mb-1.5">
-            <span className="uppercase tracking-wider text-[#0A3161]">{stepLabel}</span>
-            <span className="text-slate-600">{progressPercent}% COMPLETE</span>
-          </div>
-          <div className="w-full h-2 bg-slate-200/80 rounded-full overflow-hidden shadow-inner">
-            <div
-              className="h-full bg-gradient-to-r from-[#0A3161] via-[#164680] to-[#B31942] transition-all duration-500 ease-out rounded-full"
-              style={{ width: `${progressPercent}%` }}
-            />
+            ) : null}
           </div>
         </div>
       </header>
 
-      {/* ── Funnel Body with Luxury Radial Glow ────────────────────────────── */}
-      <main className="flex-1 relative max-w-4xl w-full mx-auto px-4 py-8 sm:px-6 sm:py-12 flex flex-col justify-center">
-        {/* Subtle decorative glow */}
-        <div
-          aria-hidden="true"
-          className="pointer-events-none absolute inset-0 -z-10"
-          style={{
-            background:
-              "radial-gradient(80% 60% at 50% 10%, rgba(10, 49, 97, 0.05) 0%, rgba(248, 250, 252, 0) 70%)",
-          }}
-        />
+      {/* ══ 3. FUNNEL CONTENT CANVAS ══ */}
+      <main className="flex-1 w-full pt-[96px] sm:pt-[108px] md:pt-[116px]">
         {children}
       </main>
 
-      {/* ── Legal & Compliance Footer ───────────────────────────────────────── */}
-      <footer className="border-t border-slate-200 bg-white py-8 px-4 text-center text-xs text-slate-500">
-        <div className="max-w-4xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div className="flex items-center gap-2 text-slate-700 font-medium">
-            <ShieldCheck className="w-4 h-4 text-emerald-600" />
-            <span>Official BigRonJones® Authorized Protocol • Guaranteed Authentic</span>
+      {/* ══ 4. OFFICIAL FOOTER — Matching BigRonJones® & The Foundation ══ */}
+      <footer className="relative overflow-hidden border-t border-slate-200 bg-[#FFFFFF] pt-12 pb-10 text-slate-900 mt-16 sm:mt-24">
+        {/* Signature BigRonJones® Background Watermark */}
+        <span
+          aria-hidden
+          className="pointer-events-none absolute bottom-2 left-0 right-0 select-none whitespace-nowrap text-center font-['Bebas_Neue'] leading-none text-slate-200/40"
+          style={{
+            fontSize: "clamp(4rem, 16vw, 18rem)",
+            letterSpacing: "0.02em",
+          }}
+        >
+          BIGRONJONES
+          <span
+            style={{
+              fontSize: "0.30em",
+              verticalAlign: "0.82em",
+              fontWeight: 800,
+              marginLeft: "0.06em",
+              fontFamily: "system-ui, -apple-system, sans-serif",
+            }}
+          >
+            ®
+          </span>
+        </span>
+
+        <div className="relative z-[2] max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-10">
+            {/* Brand Column */}
+            <div>
+              <div className="flex items-center gap-3 mb-4">
+                <img
+                  src="/images/ron/bigronjones.png?v=4"
+                  alt="BigRonJones®"
+                  className="h-10 w-10 select-none rounded-full border-2 border-[#0A3161]/70 object-cover object-center shadow-sm"
+                />
+                <div>
+                  <span className="font-['Bebas_Neue'] text-2xl tracking-[0.08em] text-slate-900 block leading-none">
+                    BIGRONJONES
+                    <span
+                      style={{
+                        fontSize: "0.30em",
+                        verticalAlign: "0.82em",
+                        fontWeight: 800,
+                        marginLeft: "0.06em",
+                        fontFamily: "system-ui, -apple-system, sans-serif",
+                      }}
+                    >
+                      ®
+                    </span>
+                  </span>
+                  <span className="font-['DM_Mono'] text-[9px] uppercase tracking-[0.2em] text-[#0A3161] font-bold">
+                    {funnelTitle}
+                  </span>
+                </div>
+              </div>
+              <p className="text-sm text-slate-600 leading-relaxed mb-3 font-['DM_Sans'] uppercase font-medium tracking-wide">
+                PRACTICAL ADVICE FOR YOUR REAL WORLD GOALS.
+                <span style={{ fontSize: "0.78em", verticalAlign: "super", fontWeight: 700, marginLeft: "0.08em" }}>
+                  ®
+                </span>
+              </p>
+              <p className="text-xs text-slate-500 font-['DM_Mono']">
+                BigRonJones LLC · 10845 Griffith Peak Dr, Las Vegas, NV 89135
+              </p>
+            </div>
+
+            {/* Support & Legal Column */}
+            <div className="md:text-right flex flex-col md:items-end justify-between">
+              <div>
+                <h4 className="font-['DM_Mono'] text-xs font-bold uppercase tracking-widest text-slate-900 mb-2">
+                  Client Support &amp; Oversight
+                </h4>
+                <a
+                  href="mailto:RonJones@BigRonJones.com"
+                  className="text-sm text-[#0A3161] hover:text-[#08274d] font-['DM_Mono'] font-medium transition-colors"
+                >
+                  RonJones@BigRonJones.com
+                </a>
+              </div>
+
+              <div className="mt-6 flex items-center md:justify-end gap-4 text-xs font-['DM_Mono'] text-slate-500">
+                <button
+                  type="button"
+                  onClick={() => setLegalModal("privacy")}
+                  className="hover:text-[#0A3161] transition-colors cursor-pointer"
+                >
+                  Privacy
+                </button>
+                <span>·</span>
+                <button
+                  type="button"
+                  onClick={() => setLegalModal("terms")}
+                  className="hover:text-[#0A3161] transition-colors cursor-pointer"
+                >
+                  Terms
+                </button>
+                <span>·</span>
+                <button
+                  type="button"
+                  onClick={() => setLegalModal("refund")}
+                  className="hover:text-[#0A3161] transition-colors cursor-pointer"
+                >
+                  Refund Policy
+                </button>
+              </div>
+            </div>
           </div>
 
-          <div className="flex items-center gap-3 text-slate-600 font-['DM_Mono'] text-[11px] font-semibold">
-            <button
-              type="button"
-              onClick={() => setLegalModal("privacy")}
-              className="hover:text-[#0A3161] transition-colors underline cursor-pointer"
-            >
-              Privacy Policy
-            </button>
-            <span>•</span>
-            <button
-              type="button"
-              onClick={() => setLegalModal("terms")}
-              className="hover:text-[#0A3161] transition-colors underline cursor-pointer"
-            >
-              Terms of Use
-            </button>
-            <span>•</span>
-            <button
-              type="button"
-              onClick={() => setLegalModal("refund")}
-              className="hover:text-[#0A3161] transition-colors underline cursor-pointer"
-            >
-              Fulfillment & Refunds
-            </button>
+          <div className="border-t border-slate-100 pt-6 text-center sm:text-left text-[11px] font-['DM_Mono'] text-slate-400">
+            <p>© {new Date().getFullYear()} BigRonJones®. All rights reserved. Statements on this site have not been evaluated by the FDA.</p>
           </div>
         </div>
-
-        <p className="mt-4 text-[11px] font-['DM_Sans'] text-slate-500 max-w-2xl mx-auto leading-relaxed">
-          © {new Date().getFullYear()} BigRonJones®. All rights reserved. Statements on this site have not been evaluated by the FDA. Programs and coaching are designed for healthy adults seeking structured fitness oversight.
-        </p>
       </footer>
 
-      {/* ── Legal Modal ────────────────────────────────────────────────────── */}
+      {/* ══ 5. LEGAL MODAL DIALOG ══ */}
       {legalModal && (
         <div
           role="dialog"
           aria-modal="true"
           onClick={() => setLegalModal(null)}
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm"
+          className="fixed inset-0 z-[70] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm"
         >
           <div
             onClick={(e) => e.stopPropagation()}
-            className="bg-white border border-slate-200 rounded-3xl max-w-2xl w-full p-6 sm:p-8 text-slate-800 max-h-[85vh] overflow-y-auto shadow-2xl"
+            className="bg-white border border-slate-200 rounded-2xl max-w-2xl w-full p-6 sm:p-8 text-slate-800 max-h-[85vh] overflow-y-auto shadow-2xl"
           >
-            <div className="flex items-center justify-between pb-4 border-b border-slate-200">
+            <div className="flex items-center justify-between pb-4 border-b border-slate-100">
               <h3 className="font-['Bebas_Neue'] text-2xl tracking-wide text-slate-900 uppercase">
                 {legalModal === "privacy" && "Privacy Notice & Data Security"}
                 {legalModal === "terms" && "Terms of Service & Program License"}
@@ -191,36 +275,36 @@ export default function FunnelShell({
               {legalModal === "privacy" && (
                 <>
                   <p>
-                    BigRonJones® respects your privacy. All contact information, assessment inputs, and shipping records submitted through this portal are encrypted via 256-Bit SSL transmission.
+                    BigRonJones® respects your privacy. All contact information, diagnostic responses, and order records submitted through this portal are securely handled.
                   </p>
                   <p>
-                    We never sell, rent, or distribute personal data to third-party marketing brokers. Diagnostic information is exclusively utilized to generate your personalized fitness prescription and coordinate program delivery.
+                    We never sell, rent, or distribute personal information to third parties. Information is strictly used to deliver your tailored fitness prescription and manage fulfillment.
                   </p>
                 </>
               )}
               {legalModal === "terms" && (
                 <>
                   <p>
-                    By participating in BigRonJones® training programs, you verify that you are physically capable of exercise and have consulted a qualified physician prior to undertaking any rigorous physical routine.
+                    By participating in BigRonJones® programs, you acknowledge that you are physically capable of physical exercise and have consulted a qualified physician if necessary.
                   </p>
                   <p>
-                    All video modules, training templates, and coaching collateral are proprietary intellectual property of BigRonJones®. Unauthorized distribution or reproduction is strictly prohibited.
+                    All video modules, training regimens, and coaching materials are proprietary intellectual property of BigRonJones LLC.
                   </p>
                 </>
               )}
               {legalModal === "refund" && (
                 <>
                   <p>
-                    Physical hardware orders (Resistance Band Kits) are fulfilled and dispatched via tracked USPS parcel. If equipment arrives defective or damaged, replacement units are provided immediately upon verification.
+                    Physical hardware orders (Resistance Bands) ship via tracked domestic parcel. If equipment arrives defective, immediate replacements are provided upon request.
                   </p>
                   <p>
-                    Digital training programs and Zoom consultations carry a 30-day satisfaction guarantee. If you complete the prescribed modules and conclude the guidance was unhelpful, contact support@bigronjones.com for a full, courteous refund.
+                    Digital programs carry our 30-Day Practical Results Guarantee. If you complete the workouts and follow the instructions without satisfaction, reach out for a full refund.
                   </p>
                 </>
               )}
             </div>
 
-            <div className="pt-4 border-t border-slate-200 flex justify-end">
+            <div className="pt-4 border-t border-slate-100 flex justify-end">
               <button
                 type="button"
                 onClick={() => setLegalModal(null)}
