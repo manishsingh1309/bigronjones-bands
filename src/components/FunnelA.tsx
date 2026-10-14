@@ -184,7 +184,7 @@ export default function FunnelA() {
       currentStep={stepNumber}
       totalSteps={totalSteps}
       stepLabel={stepLabel}
-      funnelTitle="Funnel Layout 1 • Assessment First"
+      funnelTitle="ATHLETIC DIAGNOSTIC & ENROLLMENT PROTOCOL"
       onBack={
         step === "bands"
           ? () => setStep("assessment")

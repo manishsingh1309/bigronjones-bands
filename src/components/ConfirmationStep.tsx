@@ -1,5 +1,5 @@
 import React from "react";
-import { CheckCircle2, Package, Dumbbell, Crown, ArrowRight, ShieldCheck } from "lucide-react";
+import { CheckCircle2, Package, Dumbbell, Crown, ArrowRight, ShieldCheck, Lock, ExternalLink } from "lucide-react";
 
 interface ConfirmationStepProps {
   funnelId: "funnel_a" | "funnel_b";
@@ -23,7 +23,6 @@ export default function ConfirmationStep({
     hasBands: true,
   },
 }: ConfirmationStepProps) {
-  // Compute calculated total if not provided explicitly
   const calculateTotal = () => {
     if (typeof orderSummary.totalPaid === "number") return orderSummary.totalPaid;
     let sum = 0;
@@ -40,122 +39,127 @@ export default function ConfirmationStep({
   const total = calculateTotal();
 
   return (
-    <div className="w-full max-w-2xl mx-auto text-center">
+    <div className="w-full max-w-2xl mx-auto text-center py-2 sm:py-4">
       {/* ── Success Icon & Header ─────────────────────────────────────────── */}
-      <div className="w-16 h-16 sm:w-20 sm:h-20 bg-emerald-950/80 border-2 border-emerald-500 rounded-full flex items-center justify-center mx-auto mb-6 shadow-xl shadow-emerald-900/30">
-        <CheckCircle2 className="w-8 h-8 sm:w-10 sm:h-10 text-emerald-400" />
+      <div className="w-16 h-16 sm:w-20 sm:h-20 bg-emerald-50 border-2 border-emerald-500 rounded-full flex items-center justify-center mx-auto mb-5 shadow-lg shadow-emerald-500/10">
+        <CheckCircle2 className="w-9 h-9 sm:w-11 sm:h-11 text-emerald-600" />
       </div>
 
-      <span className="text-xs font-mono font-bold tracking-widest text-emerald-400 uppercase">
+      <span className="font-['DM_Mono'] text-xs font-bold tracking-[0.25em] text-emerald-700 uppercase block mb-2">
         TRANSACTION CONFIRMED • ENROLLMENT COMPLETE
       </span>
-      <h1 className="text-3xl sm:text-5xl font-black uppercase tracking-tight text-white mt-2 mb-4">
-        WELCOME TO BIGRONJONES®
+      <h1 className="font-['Bebas_Neue'] text-4xl sm:text-6xl uppercase tracking-[0.02em] text-slate-900 leading-[0.95] mb-3">
+        WELCOME TO <span className="text-[#0A3161]">BIGRONJONES®</span>
       </h1>
-      <p className="text-sm sm:text-base text-slate-300 max-w-md mx-auto mb-8">
+      <p className="font-['DM_Sans'] text-base sm:text-lg text-slate-600 max-w-md mx-auto mb-8 leading-relaxed">
         Your orders have been processed and your account entitlements are active. Confirmation receipt and credentials have been dispatched to:
-        <span className="block font-bold text-white mt-1 font-mono text-xs sm:text-sm">{customerEmail}</span>
+        <span className="block font-['DM_Mono'] font-bold text-slate-900 mt-1 text-sm">{customerEmail}</span>
       </p>
 
       {/* ── Itemized Order Summary Box ────────────────────────────────────── */}
-      <div className="bg-[#111622] border border-slate-800 rounded-3xl p-6 sm:p-8 text-left shadow-2xl mb-8 space-y-6">
-        <div className="flex items-center justify-between border-b border-slate-800 pb-3">
-          <h2 className="text-base font-bold text-white flex items-center gap-2">
-            <ShieldCheck className="w-5 h-5 text-emerald-400" />
-            <span>Itemized Order Summary</span>
+      <div className="bg-white border-2 border-[#0A3161]/20 rounded-3xl p-6 sm:p-8 text-left shadow-2xl mb-8 space-y-6">
+        <div className="flex items-center justify-between border-b border-slate-200 pb-4">
+          <h2 className="font-['Bebas_Neue'] text-2xl text-slate-900 tracking-wide uppercase flex items-center gap-2">
+            <ShieldCheck className="w-5 h-5 text-emerald-600" />
+            <span>Official Receipt &amp; Entitlement Breakdown</span>
           </h2>
-          <span className="text-sm font-mono font-bold text-emerald-400">
-            Total Charged: ${total.toFixed(2)}
+          <span className="font-['DM_Mono'] text-sm sm:text-base font-black text-[#0A3161]">
+            Total: ${total.toFixed(2)}
           </span>
         </div>
 
-        <div className="space-y-4 text-xs sm:text-sm">
+        <div className="space-y-3.5 text-xs sm:text-sm font-['DM_Sans']">
           {orderSummary.primaryProgramTitle && (
-            <div className="flex items-start justify-between gap-3 p-3.5 rounded-xl bg-slate-900 border border-slate-800">
+            <div className="flex items-start justify-between gap-3 p-4 rounded-2xl bg-slate-50 border border-slate-200">
               <div className="flex items-start gap-3">
-                <Dumbbell className="w-5 h-5 text-blue-400 shrink-0 mt-0.5" />
+                <Dumbbell className="w-5 h-5 text-[#0A3161] shrink-0 mt-0.5" />
                 <div>
-                  <div className="font-bold text-white">
-                    {orderSummary.primaryProgramTitle} {orderSummary.isDownsell ? "(DIY Version)" : "Package"}
+                  <div className="font-bold text-slate-900 text-sm">
+                    {orderSummary.primaryProgramTitle} {orderSummary.isDownsell ? "(DIY Protocol)" : "Complete Package"}
                   </div>
-                  <p className="text-slate-400 text-xs mt-0.5">
-                    Your 8-video progression library is unlocked. Sign in with your email at <strong>bigronjones.com/auth/login</strong>.
+                  <p className="text-slate-500 text-xs mt-0.5">
+                    Your 8-video progression library is active. Sign in with your email at <strong>bigronjones.com</strong>.
                   </p>
                 </div>
               </div>
-              <span className="font-mono font-bold text-white shrink-0">
+              <span className="font-['DM_Mono'] font-bold text-slate-900 shrink-0">
                 ${orderSummary.isDownsell ? "199.00" : "249.00"}
               </span>
             </div>
           )}
 
           {orderSummary.twoPackTitles && orderSummary.twoPackTitles.length > 0 && (
-            <div className="flex items-start justify-between gap-3 p-3.5 rounded-xl bg-slate-900 border border-slate-800">
+            <div className="flex items-start justify-between gap-3 p-4 rounded-2xl bg-slate-50 border border-slate-200">
               <div className="flex items-start gap-3">
-                <Dumbbell className="w-5 h-5 text-purple-400 shrink-0 mt-0.5" />
+                <Dumbbell className="w-5 h-5 text-[#0A3161] shrink-0 mt-0.5" />
                 <div>
-                  <div className="font-bold text-white">
-                    2-Program Expansion ({orderSummary.twoPackTitles.join(" & ")})
+                  <div className="font-bold text-slate-900 text-sm">
+                    2-Program Companion Bundle ({orderSummary.twoPackTitles.join(" & ")})
                   </div>
-                  <p className="text-slate-400 text-xs mt-0.5">
-                    Both complementary training programs have been added to your member portal.
+                  <p className="text-slate-500 text-xs mt-0.5">
+                    Both complementary training programs have been added to your member vault.
                   </p>
                 </div>
               </div>
-              <span className="font-mono font-bold text-white shrink-0">$398.40</span>
+              <span className="font-['DM_Mono'] font-bold text-slate-900 shrink-0">$398.40</span>
             </div>
           )}
 
           {orderSummary.hasBands && (
-            <div className="flex items-start justify-between gap-3 p-3.5 rounded-xl bg-slate-900 border border-slate-800">
+            <div className="flex items-start justify-between gap-3 p-4 rounded-2xl bg-slate-50 border border-slate-200">
               <div className="flex items-start gap-3">
-                <Package className="w-5 h-5 text-amber-400 shrink-0 mt-0.5" />
+                <Package className="w-5 h-5 text-[#B31942] shrink-0 mt-0.5" />
                 <div>
-                  <div className="font-bold text-white">Free Resistance Band Kit ($15 S&H)</div>
-                  <p className="text-slate-400 text-xs mt-0.5">
-                    Your physical band kit has been assigned for fulfillment. Tracking details will be dispatched upon courier dispatch.
+                  <div className="font-bold text-slate-900 text-sm">Free Resistance Band Kit ($15 S&amp;H)</div>
+                  <p className="text-slate-500 text-xs mt-0.5">
+                    Your physical band kit is queued for USPS priority packing. Tracking details will be emailed upon dispatch.
                   </p>
                 </div>
               </div>
-              <span className="font-mono font-bold text-white shrink-0">$15.00</span>
+              <span className="font-['DM_Mono'] font-bold text-slate-900 shrink-0">$15.00</span>
             </div>
           )}
 
           {orderSummary.coachingProgramTitle && (
-            <div className="flex items-start justify-between gap-3 p-3.5 rounded-xl bg-slate-900 border border-slate-800">
+            <div className="flex items-start justify-between gap-3 p-4 rounded-2xl bg-slate-50 border border-slate-200">
               <div className="flex items-start gap-3">
-                <Crown className="w-5 h-5 text-amber-400 shrink-0 mt-0.5" />
+                <Crown className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
                 <div>
-                  <div className="font-bold text-white">
+                  <div className="font-bold text-slate-900 text-sm">
                     {orderSummary.coachingProgramTitle}
                     {orderSummary.coachingPlan === "in_house" ? " (Monthly Plan)" : " (PIF)"}
                   </div>
-                  <p className="text-slate-400 text-xs mt-0.5">
-                    Check your email for your confidential coaching questionnaire prior to your initial onboarding call with Ron.
+                  <p className="text-slate-500 text-xs mt-0.5">
+                    Check your email for your intake onboarding protocol prior to your initial Zoom call with your coach.
                   </p>
                 </div>
               </div>
-              <span className="font-mono font-bold text-white shrink-0">
+              <span className="font-['DM_Mono'] font-bold text-slate-900 shrink-0">
                 {orderSummary.coachingPlan === "in_house" ? "$750.00 / mo" : "$3,000.00"}
               </span>
             </div>
           )}
         </div>
 
-        {/* Member Login Button */}
-        <div className="pt-2">
+        {/* ── Next Steps Action ────────────────────────────────────────────── */}
+        <div className="pt-4 border-t border-slate-200">
           <a
-            href="https://www.bigronjones.com/auth/login"
-            className="w-full py-4 px-6 min-h-[52px] bg-[#0A3161] hover:bg-[#1E40AF] text-white font-extrabold text-sm uppercase tracking-wider rounded-xl transition-all flex items-center justify-center gap-2 cursor-pointer shadow-lg"
+            href="https://bigronjones.com"
+            className="w-full py-4 sm:py-5 bg-[#0A3161] hover:bg-[#08274d] text-white font-['Bebas_Neue'] text-2xl tracking-wider rounded-xl uppercase transition-all shadow-xl shadow-blue-900/25 flex items-center justify-center gap-3 cursor-pointer text-center"
           >
-            <span>ACCESS MY MEMBER PORTAL</span>
-            <ArrowRight className="w-4 h-4" />
+            <span>ACCESS CLIENT PORTAL (BIGRONJONES.COM)</span>
+            <ExternalLink className="w-5 h-5" />
           </a>
         </div>
       </div>
 
-      <div className="text-xs text-slate-500 font-mono">
-        Need assistance? Contact support anytime at <span className="text-slate-400">RonJones@BigRonJones.com</span>
+      <div className="flex flex-wrap items-center justify-center gap-4 text-slate-500 font-['DM_Mono'] text-[11px] uppercase tracking-wider text-center">
+        <span className="flex items-center gap-1.5">
+          <Lock className="w-3.5 h-3.5 text-emerald-600" />
+          Receipt Verified
+        </span>
+        <span>•</span>
+        <span>Customer Support: RonJones@BigRonJones.com</span>
       </div>
     </div>
   );

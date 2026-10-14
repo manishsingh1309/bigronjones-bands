@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Target, ArrowRight, CheckCircle2, User, Mail, Phone, Sparkles } from "lucide-react";
+import { Target, ArrowRight, CheckCircle2, User, Mail, Phone, Sparkles, Shield, Dumbbell } from "lucide-react";
 import { evaluatePrescription, getFunnelApiUrl } from "../lib/funnelEngine";
 
 export interface AssessmentData {
@@ -21,32 +21,32 @@ interface AssessmentStepProps {
 }
 
 const GOALS = [
-  { label: "Improve Athletic Performance", desc: "Build speed, explosive power & dynamic resilience" },
-  { label: "Build Muscle", desc: "Progressive hypertrophy, shape & muscular density" },
-  { label: "Improve Everyday Fitness", desc: "Move freely, live energetically & perform confidently" },
-  { label: "Get Stronger", desc: "Total-body functional strength & work capacity" },
-  { label: "Improve Endurance", desc: "Sustain explosive stamina & output for longer" },
-  { label: "Improve Movement", desc: "Rebuild movement quality & joint-friendly mechanics" },
-  { label: "Develop Better Control", desc: "Deliberate tempo, mind-muscle connection & stability" },
-  { label: "Improve Overall Conditioning", desc: "Cardiovascular engine, metabolic stamina & durability" },
+  { label: "Improve Athletic Performance", desc: "Build speed, explosive power & dynamic durability" },
+  { label: "Build Muscle", desc: "Progressive hypertrophy, muscular density & structural shape" },
+  { label: "Improve Everyday Fitness", desc: "Move freely, eliminate stiffness & operate with vibrant energy" },
+  { label: "Get Stronger", desc: "Total-body functional strength, joint integrity & work capacity" },
+  { label: "Improve Endurance", desc: "Sustain high output, cardiovascular efficiency & stamina" },
+  { label: "Improve Movement Quality", desc: "Rebuild movement mechanics, posture & injury resilience" },
+  { label: "Develop Better Control", desc: "Deliberate movement tempo, motor control & stabilization" },
+  { label: "Improve Overall Conditioning", desc: "High metabolic durability, engine capacity & leanness" },
 ];
 
 const OBSTACLES = [
-  "Consistency",
-  "Motivation",
-  "Knowledge",
-  "Accountability",
-  "Time",
-  "Movement limitations",
-  "Not knowing what to do",
+  "Consistency & Routine",
+  "Motivation & Drive",
+  "Lack of Knowledge",
+  "Personal Accountability",
+  "Demanding Work Schedule",
+  "Old Joint / Movement Limits",
+  "Not Knowing Exactly What To Do",
 ];
 
 const SUPPORT_LEVELS = [
-  { label: "Give me the plan; I'll execute.", desc: "Self-driven, just need structured programming" },
-  { label: "I want some guidance.", desc: "Structured plan with expert video progressions" },
-  { label: "I need accountability.", desc: "Regular check-ins to stay disciplined" },
-  { label: "I want coaching and a group pushing me.", desc: "Dedicated oversight & community" },
-  { label: "I am serious about making a major transformation.", desc: "High-touch coaching & full lifestyle alignment" },
+  { label: "Give me the plan; I'll execute.", desc: "Completely self-driven, just need structured programming" },
+  { label: "I want structured video guidance.", desc: "Step-by-step masterclass demonstrations for every movement" },
+  { label: "I need direct accountability.", desc: "Structured oversight to stay disciplined week in, week out" },
+  { label: "I want coaching and a high-standard cohort.", desc: "Dedicated coach oversight & community standards" },
+  { label: "I am serious about making a major transformation.", desc: "High-touch direct coaching & complete lifestyle alignment" },
 ];
 
 export default function AssessmentStep({
@@ -81,7 +81,7 @@ export default function AssessmentStep({
     const cleanPhone = phone.trim();
 
     if (!cleanEmail || !cleanEmail.includes("@")) {
-      setError("Please provide a valid email address to receive your training prescription.");
+      setError("Please provide a valid email address to receive your official training prescription.");
       return;
     }
     if (!cleanName) {
@@ -104,7 +104,6 @@ export default function AssessmentStep({
     setLoading(true);
 
     try {
-      // Persist in sessionStorage immediately so state survives navigation
       try {
         sessionStorage.setItem("brj_funnel_assessment", JSON.stringify(payload));
       } catch (e) {
@@ -133,15 +132,15 @@ export default function AssessmentStep({
 
       throw new Error(`Assessment returned status ${res.status}`);
     } catch (err: any) {
-      console.warn("[AssessmentStep] API error, falling back to local prescription engine:", err);
+      console.warn("[AssessmentStep] API fallback to local prescription engine:", err);
       try {
         const localPrescription = evaluatePrescription(payload);
         try {
           sessionStorage.setItem("brj_funnel_prescription", JSON.stringify(localPrescription));
         } catch {}
         onComplete(payload, localPrescription);
-      } catch {
-        setError(err?.message || "Connection error. Please try again.");
+      } catch (innerErr) {
+        setError("Error generating prescription. Please try again.");
       }
     } finally {
       setLoading(false);
@@ -149,144 +148,178 @@ export default function AssessmentStep({
   };
 
   return (
-    <div className="w-full">
-      {/* ── Eyebrow & Hero ─────────────────────────────────────────────────── */}
-      <div className="text-center max-w-2xl mx-auto mb-8 sm:mb-10">
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-950/60 border border-blue-800/50 text-blue-400 text-xs font-mono mb-3">
-          <Sparkles className="w-3.5 h-3.5 text-[#F59E0B]" />
-          <span>DIAGNOSTIC ASSESSMENT • MANDATORY STEP</span>
+    <div className="w-full max-w-3xl mx-auto py-2 sm:py-4">
+      {/* ── Editorial Header ─────────────────────────────────────────────── */}
+      <div className="text-center mb-8 sm:mb-10">
+        <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-blue-50 border border-blue-200 text-[#0A3161] text-xs font-['DM_Mono'] font-bold uppercase tracking-[0.25em] mb-4 shadow-2xs">
+          <Target className="w-3.5 h-3.5 text-[#0A3161]" />
+          <span>ATHLETIC READINESS & GOAL DIAGNOSTIC</span>
         </div>
-        <h1 className="text-2xl sm:text-4xl font-black uppercase tracking-tight text-white leading-tight">
-          TRAINING PRESCRIPTION ENGINE
-        </h1>
-        <p className="mt-2 text-sm sm:text-base text-slate-400">
-          Determine what program you need — and how much support you need to succeed.
-        </p>
 
-        <blockquote className="mt-4 p-3.5 rounded-xl bg-slate-900/60 border border-slate-800 text-slate-300 text-xs sm:text-sm italic">
-          “We don’t ask you to choose from eight programs. We determine which program fits you.”
-          <span className="block mt-1 font-sans text-xs text-[#F59E0B] font-bold not-italic">
-            — BigRonJones®
-          </span>
-        </blockquote>
+        <h1 className="font-['Bebas_Neue'] text-4xl sm:text-6xl uppercase tracking-[0.02em] text-slate-900 leading-[0.95] mb-3">
+          WE DON'T GUESS. <span className="text-[#0A3161]">WE PRESCRIBE.</span>
+        </h1>
+        <p className="font-['DM_Sans'] text-base sm:text-lg text-slate-600 max-w-xl mx-auto leading-relaxed">
+          Complete this 60-second diagnostic so Coach Ron can pinpoint your exact training protocol and the precise support level required for real, sustainable results.
+        </p>
+      </div>
+
+      {/* ── Coach Ron Personal Quote Callout ──────────────────────────────── */}
+      <div className="mb-8 rounded-2xl bg-gradient-to-r from-blue-50 via-white to-blue-50/40 border border-blue-200/80 p-5 sm:p-6 shadow-sm flex flex-col sm:flex-row items-center gap-4 sm:gap-5">
+        <img
+          src="/images/ron/bigronjones.png"
+          alt="Coach Big Ron Jones"
+          onError={(e) => {
+            (e.target as HTMLImageElement).src = "/images/ron/ron-headshot.png";
+          }}
+          className="w-14 h-14 sm:w-16 sm:h-16 rounded-full border-2 border-[#0A3161] object-cover shadow-md shrink-0"
+        />
+        <div className="space-y-1 text-center sm:text-left">
+          <p className="font-['DM_Sans'] text-sm sm:text-base text-slate-700 italic leading-relaxed">
+            "Most programs fail because they ask you to pick from a menu without knowing your starting baseline. We match you to the exact protocol designed for your body, your goals, and your schedule."
+          </p>
+          <p className="font-['DM_Mono'] text-xs font-bold uppercase tracking-wider text-[#0A3161]">
+            — Big Ron Jones, Head Coach & Founder
+          </p>
+        </div>
       </div>
 
       {error && (
-        <div className="mb-6 p-4 rounded-xl bg-red-950/70 border border-red-800/80 text-red-200 text-sm">
+        <div className="mb-6 p-4 rounded-xl bg-red-50 border border-red-200 text-red-700 text-sm font-['DM_Sans']">
           {error}
         </div>
       )}
 
       {/* ── Form Card ─────────────────────────────────────────────────────── */}
-      <form onSubmit={handleSubmit} className="space-y-8">
-        {/* Q1: Gender */}
-        <div className="bg-[#111622] border border-slate-800 rounded-2xl p-5 sm:p-6 shadow-xl">
-          <label className="block text-xs font-mono uppercase tracking-wider text-[#F59E0B] mb-2 font-bold">
-            01 / GENDER SPECIFICATION
-          </label>
-          <p className="text-sm font-semibold text-white mb-4">
-            Select your training pathway:
+      <form onSubmit={handleSubmit} className="space-y-6 sm:space-y-8">
+        {/* Q1: Gender Pathway */}
+        <div className="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 shadow-xl">
+          <span className="font-['DM_Mono'] text-[11px] font-bold uppercase tracking-[0.25em] text-[#0A3161] block mb-1">
+            STEP 01 OF 06
+          </span>
+          <h2 className="font-['Bebas_Neue'] text-2xl sm:text-3xl text-slate-900 tracking-wide uppercase mb-2">
+            SELECT YOUR TRAINING PATHWAY
+          </h2>
+          <p className="font-['DM_Sans'] text-sm text-slate-600 mb-5">
+            Men's and women's programming incorporate distinct hormonal recovery curves and mechanical loading.
           </p>
-          <div className="grid grid-cols-2 gap-3 sm:gap-4">
+
+          <div className="grid grid-cols-2 gap-4">
             {(["Male", "Female"] as const).map((g) => (
               <button
                 key={g}
                 type="button"
                 onClick={() => setGender(g)}
-                className={`py-3.5 px-4 min-h-[48px] rounded-xl font-bold text-sm sm:text-base transition-all flex items-center justify-center gap-2 border cursor-pointer ${
+                className={`py-4 px-4 min-h-[56px] rounded-2xl font-bold text-base transition-all flex items-center justify-center gap-2 border-2 cursor-pointer ${
                   gender === g
-                    ? "bg-[#0A3161] text-white border-blue-500 ring-2 ring-blue-500/30 shadow-lg"
-                    : "bg-slate-900/80 text-slate-300 border-slate-800 hover:border-slate-700"
+                    ? "bg-blue-50/70 text-[#0A3161] border-[#0A3161] ring-2 ring-[#0A3161]/20 shadow-md"
+                    : "bg-white text-slate-700 border-slate-200 hover:border-slate-300 hover:bg-slate-50/50 shadow-xs"
                 }`}
               >
-                {gender === g && <CheckCircle2 className="w-4 h-4 text-emerald-400" />}
-                {g} Track
+                {gender === g && <CheckCircle2 className="w-5 h-5 text-[#0A3161]" />}
+                <span>{g} Pathway</span>
               </button>
             ))}
           </div>
         </div>
 
-        {/* Q2: Primary Goal */}
-        <div className="bg-[#111622] border border-slate-800 rounded-2xl p-5 sm:p-6 shadow-xl">
-          <label className="block text-xs font-mono uppercase tracking-wider text-[#F59E0B] mb-2 font-bold">
-            02 / PRIMARY GOAL
-          </label>
-          <p className="text-sm font-semibold text-white mb-4">
-            What is your single most important training objective right now?
+        {/* Q2: Primary Goal (The 8 Programs) */}
+        <div className="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 shadow-xl">
+          <span className="font-['DM_Mono'] text-[11px] font-bold uppercase tracking-[0.25em] text-[#0A3161] block mb-1">
+            STEP 02 OF 06
+          </span>
+          <h2 className="font-['Bebas_Neue'] text-2xl sm:text-3xl text-slate-900 tracking-wide uppercase mb-2">
+            WHAT IS YOUR PRIMARY TRAINING OBJECTIVE?
+          </h2>
+          <p className="font-['DM_Sans'] text-sm text-slate-600 mb-5">
+            Select the single outcome that matters most to you right now.
           </p>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
             {GOALS.map((g) => (
               <button
                 key={g.label}
                 type="button"
                 onClick={() => setGoal(g.label)}
-                className={`p-4 min-h-[64px] rounded-xl text-left transition-all border flex flex-col justify-between cursor-pointer ${
+                className={`p-4 min-h-[72px] rounded-2xl text-left transition-all border-2 flex flex-col justify-between cursor-pointer ${
                   goal === g.label
-                    ? "bg-[#0A3161]/80 text-white border-blue-500 ring-2 ring-blue-500/20"
-                    : "bg-slate-900/60 text-slate-300 border-slate-800 hover:border-slate-700"
+                    ? "bg-blue-50/70 border-[#0A3161] ring-2 ring-[#0A3161]/20 shadow-md text-[#0A3161]"
+                    : "bg-white border-slate-200 hover:border-slate-300 hover:bg-slate-50/50 text-slate-700 shadow-xs"
                 }`}
               >
-                <div className="flex items-center justify-between mb-1">
-                  <span className="font-bold text-sm text-white">{g.label}</span>
-                  {goal === g.label && <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />}
+                <div className="flex items-center justify-between mb-1.5">
+                  <span className="font-['Bebas_Neue'] text-xl tracking-wide uppercase text-slate-900">
+                    {g.label}
+                  </span>
+                  {goal === g.label && <CheckCircle2 className="w-5 h-5 text-[#0A3161] shrink-0" />}
                 </div>
-                <span className="text-xs text-slate-400">{g.desc}</span>
+                <span className="font-['DM_Sans'] text-xs text-slate-500 leading-normal">
+                  {g.desc}
+                </span>
               </button>
             ))}
           </div>
         </div>
 
-        {/* Q3: Current Level & Q4: Primary Obstacle */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {/* Q3: Current Fitness Level & Q4: Primary Obstacle */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8">
           {/* Level */}
-          <div className="bg-[#111622] border border-slate-800 rounded-2xl p-5 sm:p-6 shadow-xl">
-            <label className="block text-xs font-mono uppercase tracking-wider text-[#F59E0B] mb-2 font-bold">
-              03 / CURRENT FITNESS LEVEL
-            </label>
-            <p className="text-sm font-semibold text-white mb-4">
-              Where are you starting from today?
+          <div className="bg-white border border-slate-200 rounded-3xl p-6 shadow-xl">
+            <span className="font-['DM_Mono'] text-[11px] font-bold uppercase tracking-[0.25em] text-[#0A3161] block mb-1">
+              STEP 03 OF 06
+            </span>
+            <h3 className="font-['Bebas_Neue'] text-2xl text-slate-900 tracking-wide uppercase mb-1">
+              CURRENT FITNESS BASELINE
+            </h3>
+            <p className="font-['DM_Sans'] text-xs text-slate-500 mb-4">
+              Where are you honestly starting from today?
             </p>
+
             <div className="space-y-2.5">
               {(["Beginner", "Intermediate", "Advanced"] as const).map((lvl) => (
                 <button
                   key={lvl}
                   type="button"
                   onClick={() => setLevel(lvl)}
-                  className={`w-full py-3.5 px-4 min-h-[48px] rounded-xl font-medium text-sm text-left transition-all border flex items-center justify-between cursor-pointer ${
+                  className={`w-full py-3.5 px-4 min-h-[48px] rounded-xl font-bold text-sm text-left transition-all border-2 flex items-center justify-between cursor-pointer ${
                     level === lvl
-                      ? "bg-[#0A3161] text-white border-blue-500"
-                      : "bg-slate-900/60 text-slate-300 border-slate-800 hover:border-slate-700"
+                      ? "bg-blue-50/70 border-[#0A3161] text-[#0A3161] ring-2 ring-[#0A3161]/20 shadow-sm"
+                      : "bg-white border-slate-200 hover:border-slate-300 text-slate-700 shadow-2xs"
                   }`}
                 >
                   <span>{lvl}</span>
-                  {level === lvl && <CheckCircle2 className="w-4 h-4 text-emerald-400" />}
+                  {level === lvl && <CheckCircle2 className="w-4 h-4 text-[#0A3161]" />}
                 </button>
               ))}
             </div>
           </div>
 
           {/* Obstacle */}
-          <div className="bg-[#111622] border border-slate-800 rounded-2xl p-5 sm:p-6 shadow-xl">
-            <label className="block text-xs font-mono uppercase tracking-wider text-[#F59E0B] mb-2 font-bold">
-              04 / PRIMARY OBSTACLE
-            </label>
-            <p className="text-sm font-semibold text-white mb-4">
-              What has historically gotten in your way?
+          <div className="bg-white border border-slate-200 rounded-3xl p-6 shadow-xl">
+            <span className="font-['DM_Mono'] text-[11px] font-bold uppercase tracking-[0.25em] text-[#0A3161] block mb-1">
+              STEP 04 OF 06
+            </span>
+            <h3 className="font-['Bebas_Neue'] text-2xl text-slate-900 tracking-wide uppercase mb-1">
+              BIGGEST HISTORICAL OBSTACLE
+            </h3>
+            <p className="font-['DM_Sans'] text-xs text-slate-500 mb-4">
+              What has gotten in your way previously?
             </p>
+
             <div className="space-y-2">
               {OBSTACLES.map((obs) => (
                 <button
                   key={obs}
                   type="button"
                   onClick={() => setObstacle(obs)}
-                  className={`w-full py-3 px-3.5 min-h-[44px] rounded-xl text-xs sm:text-sm font-medium text-left transition-all border flex items-center justify-between cursor-pointer ${
+                  className={`w-full py-2.5 px-3.5 min-h-[42px] rounded-xl text-xs font-semibold text-left transition-all border-2 flex items-center justify-between cursor-pointer ${
                     obstacle === obs
-                      ? "bg-[#0A3161] text-white border-blue-500"
-                      : "bg-slate-900/60 text-slate-300 border-slate-800 hover:border-slate-700"
+                      ? "bg-blue-50/70 border-[#0A3161] text-[#0A3161] shadow-2xs"
+                      : "bg-white border-slate-200 hover:border-slate-300 text-slate-700 shadow-2xs"
                   }`}
                 >
                   <span>{obs}</span>
-                  {obstacle === obs && <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />}
+                  {obstacle === obs && <CheckCircle2 className="w-4 h-4 text-[#0A3161] shrink-0" />}
                 </button>
               ))}
             </div>
@@ -294,136 +327,162 @@ export default function AssessmentStep({
         </div>
 
         {/* Q5: Training Environment */}
-        <div className="bg-[#111622] border border-slate-800 rounded-2xl p-5 sm:p-6 shadow-xl">
-          <label className="block text-xs font-mono uppercase tracking-wider text-[#F59E0B] mb-2 font-bold">
-            05 / TRAINING ENVIRONMENT
-          </label>
-          <p className="text-sm font-semibold text-white mb-4">
-            Where will you be executing your sessions?
+        <div className="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 shadow-xl">
+          <span className="font-['DM_Mono'] text-[11px] font-bold uppercase tracking-[0.25em] text-[#0A3161] block mb-1">
+            STEP 05 OF 06
+          </span>
+          <h2 className="font-['Bebas_Neue'] text-2xl sm:text-3xl text-slate-900 tracking-wide uppercase mb-2">
+            TRAINING ENVIRONMENT
+          </h2>
+          <p className="font-['DM_Sans'] text-sm text-slate-600 mb-4">
+            Where do you plan on completing your weekly training sessions?
           </p>
+
           <div className="grid grid-cols-3 gap-3">
-            {(["Gym", "Home", "Both"] as const).map((env) => (
+            {(["Home", "Gym", "Both"] as const).map((env) => (
               <button
                 key={env}
                 type="button"
                 onClick={() => setEnvironment(env)}
-                className={`py-3.5 px-3 min-h-[48px] rounded-xl font-bold text-sm text-center transition-all border cursor-pointer ${
+                className={`py-3.5 px-3 rounded-2xl font-bold text-sm transition-all border-2 flex flex-col items-center justify-center gap-1 cursor-pointer ${
                   environment === env
-                    ? "bg-[#0A3161] text-white border-blue-500"
-                    : "bg-slate-900/60 text-slate-300 border-slate-800 hover:border-slate-700"
+                    ? "bg-blue-50/70 text-[#0A3161] border-[#0A3161] ring-2 ring-[#0A3161]/20 shadow-md"
+                    : "bg-white text-slate-700 border-slate-200 hover:border-slate-300 shadow-2xs"
                 }`}
               >
-                {env}
+                <Dumbbell className="w-4 h-4 text-[#0A3161]" />
+                <span>{env}</span>
               </button>
             ))}
           </div>
         </div>
 
-        {/* Q6: Support Level */}
-        <div className="bg-[#111622] border border-slate-800 rounded-2xl p-5 sm:p-6 shadow-xl">
-          <label className="block text-xs font-mono uppercase tracking-wider text-[#F59E0B] mb-2 font-bold">
-            06 / SUPPORT & ACCOUNTABILITY LEVEL
-          </label>
-          <p className="text-sm font-semibold text-white mb-4">
-            How much structure and oversight do you require?
+        {/* Q6: Support Level Required */}
+        <div className="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 shadow-xl">
+          <span className="font-['DM_Mono'] text-[11px] font-bold uppercase tracking-[0.25em] text-[#0A3161] block mb-1">
+            STEP 06 OF 06
+          </span>
+          <h2 className="font-['Bebas_Neue'] text-2xl sm:text-3xl text-slate-900 tracking-wide uppercase mb-2">
+            HOW MUCH SUPPORT DO YOU HONESTLY NEED TO SUCCEED?
+          </h2>
+          <p className="font-['DM_Sans'] text-sm text-slate-600 mb-5">
+            Be direct with yourself. Results depend on having the right level of structure and oversight.
           </p>
+
           <div className="space-y-3">
-            {SUPPORT_LEVELS.map((sup) => (
+            {SUPPORT_LEVELS.map((s) => (
               <button
-                key={sup.label}
+                key={s.label}
                 type="button"
-                onClick={() => setSupportLevel(sup.label)}
-                className={`w-full p-4 min-h-[60px] rounded-xl text-left transition-all border flex items-center justify-between cursor-pointer ${
-                  supportLevel === sup.label
-                    ? "bg-[#0A3161]/80 text-white border-blue-500 ring-2 ring-blue-500/20"
-                    : "bg-slate-900/60 text-slate-300 border-slate-800 hover:border-slate-700"
+                onClick={() => setSupportLevel(s.label)}
+                className={`w-full p-4 rounded-2xl text-left transition-all border-2 flex items-start justify-between gap-3 cursor-pointer ${
+                  supportLevel === s.label
+                    ? "bg-blue-50/70 border-[#0A3161] ring-2 ring-[#0A3161]/20 text-[#0A3161] shadow-md"
+                    : "bg-white border-slate-200 hover:border-slate-300 text-slate-700 shadow-2xs"
                 }`}
               >
                 <div>
-                  <div className="font-bold text-sm text-white">{sup.label}</div>
-                  <div className="text-xs text-slate-400 mt-0.5">{sup.desc}</div>
+                  <div className="font-bold text-sm sm:text-base text-slate-900 mb-0.5">
+                    {s.label}
+                  </div>
+                  <div className="font-['DM_Sans'] text-xs text-slate-500">
+                    {s.desc}
+                  </div>
                 </div>
-                {supportLevel === sup.label && <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0 ml-3" />}
+                {supportLevel === s.label && (
+                  <CheckCircle2 className="w-5 h-5 text-[#0A3161] shrink-0 mt-0.5" />
+                )}
               </button>
             ))}
           </div>
         </div>
 
-        {/* Contact Information to receive prescription */}
-        <div className="bg-[#111622] border border-slate-800 rounded-2xl p-5 sm:p-6 shadow-xl">
-          <label className="block text-xs font-mono uppercase tracking-wider text-[#F59E0B] mb-2 font-bold">
-            PRESCRIPTION DISPATCH CREDENTIALS
-          </label>
-          <p className="text-sm font-semibold text-white mb-4">
-            Where should we deliver your matched program prescription?
-          </p>
+        {/* ── Contact Details & Submission Card ─────────────────────────────── */}
+        <div className="bg-white border-2 border-[#0A3161]/30 rounded-3xl p-6 sm:p-8 shadow-2xl">
+          <div className="text-center mb-6">
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-50 text-[#0A3161] text-xs font-['DM_Mono'] font-bold uppercase tracking-wider mb-2">
+              <Sparkles className="w-3.5 h-3.5" />
+              CONFIDENTIAL PRESCRIPTION DISPATCH
+            </span>
+            <h3 className="font-['Bebas_Neue'] text-3xl sm:text-4xl text-slate-900 tracking-wide uppercase">
+              WHERE SHOULD WE SEND YOUR PRESCRIPTION?
+            </h3>
+            <p className="font-['DM_Sans'] text-sm text-slate-600">
+              Provide your details below to generate and secure your personalized training protocol.
+            </p>
+          </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="space-y-4 mb-6">
             <div>
-              <label className="block text-xs text-slate-400 mb-1 font-medium">Full Name *</label>
+              <label className="block text-xs font-['DM_Mono'] font-bold uppercase tracking-wider text-slate-700 mb-1.5">
+                Full Name *
+              </label>
               <div className="relative">
-                <User className="w-4 h-4 text-slate-500 absolute left-3 top-3.5" />
+                <User className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
                 <input
                   type="text"
                   required
-                  placeholder="e.g. John Doe"
                   value={fullName}
                   onChange={(e) => setFullName(e.target.value)}
-                  className="w-full pl-10 pr-4 py-3 bg-slate-900 border border-slate-700 rounded-xl text-white text-base sm:text-sm focus:outline-none focus:border-blue-500"
+                  placeholder="e.g. Marcus Vance"
+                  className="w-full pl-10 pr-4 py-3.5 rounded-xl border border-slate-300 bg-white text-slate-900 text-sm font-medium focus:border-[#0A3161] focus:ring-2 focus:ring-[#0A3161]/20 outline-none shadow-2xs"
                 />
               </div>
             </div>
 
             <div>
-              <label className="block text-xs text-slate-400 mb-1 font-medium">Email Address *</label>
+              <label className="block text-xs font-['DM_Mono'] font-bold uppercase tracking-wider text-slate-700 mb-1.5">
+                Email Address (For Prescription Dispatch) *
+              </label>
               <div className="relative">
-                <Mail className="w-4 h-4 text-slate-500 absolute left-3 top-3.5" />
+                <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
                 <input
                   type="email"
                   required
-                  placeholder="john@example.com"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="w-full pl-10 pr-4 py-3 bg-slate-900 border border-slate-700 rounded-xl text-white text-base sm:text-sm focus:outline-none focus:border-blue-500"
+                  placeholder="name@example.com"
+                  className="w-full pl-10 pr-4 py-3.5 rounded-xl border border-slate-300 bg-white text-slate-900 text-sm font-medium focus:border-[#0A3161] focus:ring-2 focus:ring-[#0A3161]/20 outline-none shadow-2xs"
                 />
               </div>
             </div>
 
-            <div className="sm:col-span-2">
-              <label className="block text-xs text-slate-400 mb-1 font-medium">Phone Number (Optional - for training updates)</label>
+            <div>
+              <label className="block text-xs font-['DM_Mono'] font-bold uppercase tracking-wider text-slate-700 mb-1.5">
+                Phone Number (Optional - For Direct Consultation SMS)
+              </label>
               <div className="relative">
-                <Phone className="w-4 h-4 text-slate-500 absolute left-3 top-3.5" />
+                <Phone className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
                 <input
                   type="tel"
-                  placeholder="(555) 000-0000"
                   value={phone}
                   onChange={(e) => setPhone(e.target.value)}
-                  className="w-full pl-10 pr-4 py-3 bg-slate-900 border border-slate-700 rounded-xl text-white text-base sm:text-sm focus:outline-none focus:border-blue-500"
+                  placeholder="(555) 000-0000"
+                  className="w-full pl-10 pr-4 py-3.5 rounded-xl border border-slate-300 bg-white text-slate-900 text-sm font-medium focus:border-[#0A3161] focus:ring-2 focus:ring-[#0A3161]/20 outline-none shadow-2xs"
                 />
               </div>
             </div>
           </div>
-        </div>
 
-        {/* Submit Button */}
-        <div className="text-center pt-2">
+          {/* High-Converting Primary Red CTA */}
           <button
             type="submit"
             disabled={loading}
-            className="w-full sm:w-auto min-w-[320px] min-h-[54px] inline-flex items-center justify-center gap-3 px-8 py-4 bg-gradient-to-r from-[#0A3161] via-[#2563EB] to-[#1D4ED8] hover:from-[#1E40AF] hover:to-[#2563EB] text-white font-extrabold text-base uppercase tracking-wider rounded-xl shadow-xl hover:shadow-blue-500/20 transition-all disabled:opacity-50 cursor-pointer"
+            className="w-full py-4 sm:py-5 bg-[#B31942] hover:bg-[#8e1032] text-white font-['Bebas_Neue'] text-2xl sm:text-3xl tracking-wider rounded-xl uppercase transition-all shadow-xl shadow-red-900/30 flex items-center justify-center gap-3 cursor-pointer group disabled:opacity-50 active:scale-[0.99]"
           >
             {loading ? (
-              <span>CALCULATING PRESCRIPTION…</span>
+              <span>ANALYZING & GENERATING PRESCRIPTION...</span>
             ) : (
               <>
-                <Target className="w-5 h-5 text-[#F59E0B]" />
-                <span>GENERATE MY PRESCRIPTION</span>
-                <ArrowRight className="w-5 h-5" />
+                <span>GENERATE MY TRAINING PRESCRIPTION</span>
+                <ArrowRight className="w-6 h-6 transition-transform group-hover:translate-x-1" />
               </>
             )}
           </button>
-          <p className="mt-3 text-[11px] font-mono text-slate-500">
-            Instant diagnostic result • Encrypted transmission • BigRonJones® Program Matrix
+
+          <p className="mt-3.5 text-center font-['DM_Mono'] text-[11px] text-slate-500 uppercase tracking-widest flex items-center justify-center gap-1.5">
+            <Shield className="w-3.5 h-3.5 text-emerald-600" />
+            <span>256-Bit SSL Encrypted • Zero Spam • Strict Coach Confidentiality</span>
           </p>
         </div>
       </form>

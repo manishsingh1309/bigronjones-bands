@@ -1,6 +1,6 @@
 import { getFunnelApiUrl } from "../lib/funnelEngine";
 import React, { useState } from "react";
-import { Crown, Check, ArrowRight, ShieldCheck, Video, Calendar, Sparkles } from "lucide-react";
+import { Crown, Check, ArrowRight, ShieldCheck, Video, Calendar, Sparkles, Lock } from "lucide-react";
 
 interface AscensionStepProps {
   funnelId: "funnel_a" | "funnel_b";
@@ -24,10 +24,10 @@ export default function AscensionStep({
   const [error, setError] = useState<string | null>(null);
 
   const isWomens = gender === "Female";
-  const programTitle = isWomens ? "Women’s Wellness Program" : "Men’s Fitness Alliance";
+  const programTitle = isWomens ? "WOMEN'S WELLNESS PROGRAM (WWP)" : "MEN'S FITNESS ALLIANCE (MFA)";
   const programSub = isWomens
-    ? "A structured 24-week health, nutrition, and strength transformation built specifically for women."
-    : "A 24-week high-performance brotherhood of strength, discipline, and executive conditioning.";
+    ? "A structured 24-week health, nutrition, and strength transformation engineered specifically for women with dedicated female wellness oversight."
+    : "A 24-week executive brotherhood of functional strength, relentless discipline, and direct weekly coaching oversight with Big Ron Jones.";
 
   const handleEnroll = async () => {
     setLoading(true);
@@ -62,7 +62,6 @@ export default function AscensionStep({
       throw new Error(data.error || `Checkout returned status ${res.status}`);
     } catch (err: any) {
       console.warn("[AscensionStep] Checkout warning:", err);
-      // Fallback for standalone preview or test mode so tester can audit full flow
       if (
         window.location.hostname === "localhost" ||
         window.location.hostname.includes("vercel.app") ||
@@ -79,163 +78,184 @@ export default function AscensionStep({
   };
 
   return (
-    <div className="w-full max-w-3xl mx-auto">
-      {/* ── Banner ────────────────────────────────────────────────────────── */}
-      <div className="text-center mb-8">
-        <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-amber-950/70 border border-amber-800 text-amber-400 text-xs font-mono mb-3">
-          <Crown className="w-4 h-4 text-amber-400" />
-          <span>PREMIUM 24-WEEK DIRECT OVERSIGHT • HIGHEST TIER</span>
+    <div className="w-full max-w-3xl mx-auto py-2 sm:py-4">
+      {/* ── Banner Header ─────────────────────────────────────────────────── */}
+      <div className="text-center mb-8 sm:mb-10">
+        <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-amber-50 border border-amber-300 text-amber-950 text-xs font-['DM_Mono'] font-bold uppercase tracking-[0.25em] mb-4 shadow-2xs">
+          <Crown className="w-3.5 h-3.5 text-amber-700" />
+          <span>EXECUTIVE 24-WEEK DIRECT OVERSIGHT • HIGHEST TIER</span>
         </div>
 
-        <h1 className="text-3xl sm:text-5xl font-black uppercase tracking-tight text-white leading-tight">
+        <h1 className="font-['Bebas_Neue'] text-4xl sm:text-6xl uppercase tracking-[0.02em] text-slate-900 leading-[0.95] mb-2">
           {programTitle}
         </h1>
-        <p className="mt-2 text-sm sm:text-base text-slate-300 max-w-xl mx-auto">
+        <p className="font-['DM_Sans'] text-base sm:text-lg text-slate-600 max-w-xl mx-auto leading-relaxed">
           {programSub}
         </p>
       </div>
 
       {error && (
-        <div className="mb-6 p-4 rounded-xl bg-red-950/70 border border-red-800 text-red-200 text-sm">
+        <div className="mb-6 p-4 rounded-xl bg-red-50 border border-red-200 text-red-700 text-sm font-['DM_Sans']">
           {error}
         </div>
       )}
 
       {/* ── Main Coaching Card ────────────────────────────────────────────── */}
-      <div className="bg-[#111622] border-2 border-amber-500/40 rounded-3xl p-6 sm:p-10 shadow-2xl relative overflow-hidden mb-8">
+      <div className="bg-white border-2 border-[#0A3161]/30 rounded-3xl p-6 sm:p-10 shadow-2xl relative overflow-hidden mb-8">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center mb-8">
           {/* Coach Photo & Badge */}
-          <div className="relative rounded-2xl overflow-hidden aspect-4/3 bg-slate-900 border border-slate-800">
+          <div className="relative rounded-2xl overflow-hidden aspect-4/3 bg-slate-100 border border-slate-200 shadow-md">
             <img
-              src={isWomens ? "/assets/client-stories/selena-800.jpg" : "/images/ron/ron-hero.jpg"}
+              src={isWomens ? "/images/team/shelia.png" : "/images/team/ron-founder.png"}
               alt={programTitle}
               className="w-full h-full object-cover"
               onError={(e) => {
-                (e.target as HTMLImageElement).src = "/images/ron/coaching-session.jpg";
+                (e.target as HTMLImageElement).src = isWomens
+                  ? "/assets/client-stories/selena-800.jpg"
+                  : "/images/ron/ron-headshot.png";
               }}
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent flex flex-col justify-end p-4">
-              <span className="font-mono text-xs font-bold text-amber-400 uppercase tracking-widest">
-                24-WEEK PRIVATE OVERSIGHT
+            <div className="absolute inset-0 bg-gradient-to-t from-slate-900/90 via-slate-900/20 to-transparent flex flex-col justify-end p-4">
+              <span className="font-['DM_Mono'] text-xs font-bold text-amber-400 uppercase tracking-widest">
+                24-WEEK DEDICATED COACHING
               </span>
-              <span className="text-sm font-bold text-white">
-                Weekly Direct Zoom Access with BigRonJones®
+              <span className="font-['Bebas_Neue'] text-xl text-white tracking-wide uppercase">
+                {isWomens ? "Weekly Direct Oversight with Coach Selena" : "Weekly Direct 1-on-1 Oversight with Big Ron Jones"}
               </span>
             </div>
           </div>
 
           {/* Inclusions */}
           <div>
-            <h2 className="text-lg font-bold text-white mb-3 flex items-center gap-2">
-              <ShieldCheck className="w-5 h-5 text-amber-400" />
+            <h2 className="font-['Bebas_Neue'] text-2xl text-slate-900 tracking-wide uppercase mb-3 flex items-center gap-2">
+              <ShieldCheck className="w-5 h-5 text-[#0A3161]" />
               <span>Full Coaching Ecosystem Inclusions:</span>
             </h2>
 
-            <ul className="space-y-3 text-xs sm:text-sm text-slate-300 font-medium">
+            <ul className="space-y-3 text-xs sm:text-sm text-slate-700 font-['DM_Sans']">
               <li className="flex items-start gap-2.5">
-                <Check className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
+                <Check className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
                 <span>
-                  <strong>Weekly 1:1 Zoom with BigRonJones®</strong> for progressive training review, form analysis & mindset.
+                  <strong>Weekly 1:1 Private Zoom Calls</strong> for progressive training review, biomechanics audits & direct accountability.
                 </span>
               </li>
               <li className="flex items-start gap-2.5">
-                <Check className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
+                <Check className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
                 <span>
-                  <strong>Weekly nutrition guidance</strong> with our in-house Nutritionist tailored to real work & family life.
+                  <strong>Custom Adaptive Nutrition Blueprint</strong> updated bi-weekly based on metabolic rate and progress.
                 </span>
               </li>
               <li className="flex items-start gap-2.5">
-                <Check className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
+                <Check className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
                 <span>
-                  <strong>Custom progressive training & cardio protocols</strong> updated dynamically as you evolve.
+                  <strong>Private Direct Messaging Access</strong> with your coach for instant feedback and travel adjustments.
                 </span>
               </li>
               <li className="flex items-start gap-2.5">
-                <Check className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
+                <Check className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
                 <span>
-                  <strong>Private accountability community</strong> with high-caliber peers holding you to a higher standard.
+                  <strong>Full Lifetime Video Vault Access</strong> to all BigRonJones® current and future training programs.
                 </span>
               </li>
             </ul>
           </div>
         </div>
 
-        {/* ── Payment Options ─────────────────────────────────────────────── */}
-        <div className="p-5 rounded-2xl bg-slate-900 border border-slate-800 mb-8">
-          <p className="text-xs font-mono uppercase text-slate-400 mb-3 font-bold">
-            Select Your Coaching Investment Option:
-          </p>
+        {/* ── Payment Plan Selector ────────────────────────────────────────── */}
+        <div className="p-6 rounded-2xl bg-slate-50 border border-slate-200 mb-8">
+          <span className="block font-['DM_Mono'] text-xs uppercase tracking-wider text-slate-700 font-bold mb-3">
+            Select Your Enrollment Structure:
+          </span>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            {/* PIF $3,000 */}
-            <button
-              type="button"
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            {/* PIF */}
+            <div
               onClick={() => setPlan("pif")}
-              className={`p-4 rounded-xl text-left border transition-all cursor-pointer min-h-[90px] ${
+              className={`p-4 rounded-xl border-2 transition-all cursor-pointer ${
                 plan === "pif"
-                  ? "bg-[#0A3161] border-blue-500 ring-2 ring-blue-500/20 text-white"
-                  : "bg-slate-950/80 border-slate-800 text-slate-300 hover:border-slate-700"
+                  ? "bg-blue-50/70 border-[#0A3161] ring-2 ring-[#0A3161]/20 shadow-md"
+                  : "bg-white border-slate-200 hover:border-slate-300"
               }`}
             >
               <div className="flex items-center justify-between mb-1">
-                <span className="font-bold text-sm">Paid In Full</span>
-                <span className="text-xs font-mono font-bold text-emerald-400">BEST VALUE</span>
+                <span className="font-['Bebas_Neue'] text-xl text-slate-900 tracking-wide uppercase">
+                  Pay In Full (Term Access)
+                </span>
+                <span className="text-xs font-['DM_Mono'] font-bold text-emerald-700 bg-emerald-100/80 px-2.5 py-0.5 rounded-full">
+                  BEST VALUE
+                </span>
               </div>
-              <div className="text-2xl font-black text-white">$3,000</div>
-              <div className="text-[11px] text-slate-400 mt-1">One-time payment for complete 24 weeks</div>
-            </button>
+              <div className="font-['Bebas_Neue'] text-3xl text-slate-900">$3,000</div>
+              <p className="font-['DM_Sans'] text-xs text-slate-500 mt-1">
+                One-time enrollment covering complete 24 weeks of direct weekly coaching oversight.
+              </p>
+            </div>
 
-            {/* In-House $750 x 4 */}
-            <button
-              type="button"
+            {/* In-House Split */}
+            <div
               onClick={() => setPlan("in_house")}
-              className={`p-4 rounded-xl text-left border transition-all cursor-pointer min-h-[90px] ${
+              className={`p-4 rounded-xl border-2 transition-all cursor-pointer ${
                 plan === "in_house"
-                  ? "bg-[#0A3161] border-blue-500 ring-2 ring-blue-500/20 text-white"
-                  : "bg-slate-950/80 border-slate-800 text-slate-300 hover:border-slate-700"
+                  ? "bg-blue-50/70 border-[#0A3161] ring-2 ring-[#0A3161]/20 shadow-md"
+                  : "bg-white border-slate-200 hover:border-slate-300"
               }`}
             >
               <div className="flex items-center justify-between mb-1">
-                <span className="font-bold text-sm">In-House Installment Plan</span>
-                <span className="text-xs font-mono font-bold text-blue-300">4 PAYMENTS</span>
+                <span className="font-['Bebas_Neue'] text-xl text-slate-900 tracking-wide uppercase">
+                  In-House Monthly Installments
+                </span>
+                <span className="text-xs font-['DM_Mono'] font-bold text-slate-500">
+                  4 MONTHS
+                </span>
               </div>
-              <div className="text-2xl font-black text-white">$750 <span className="text-xs font-normal text-slate-400">/ month</span></div>
-              <div className="text-[11px] text-slate-400 mt-1">$750 due today, then 3 monthly payments of $750</div>
-            </button>
+              <div className="font-['Bebas_Neue'] text-3xl text-slate-900">4 × $750/mo</div>
+              <p className="font-['DM_Sans'] text-xs text-slate-500 mt-1">
+                $750 due today, followed by three automatic monthly payments. Total $3,000.
+              </p>
+            </div>
           </div>
         </div>
 
-        {/* CTA Buttons */}
-        <div className="space-y-3">
+        {/* ── Actions ──────────────────────────────────────────────────────── */}
+        <div className="space-y-4">
           <button
             type="button"
             onClick={handleEnroll}
             disabled={loading}
-            className="w-full py-4 px-6 min-h-[54px] bg-gradient-to-r from-amber-500 via-amber-400 to-amber-500 hover:from-amber-400 hover:to-amber-300 text-black font-black text-base uppercase tracking-wider rounded-xl shadow-xl hover:shadow-amber-500/30 transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
+            className="w-full py-4 sm:py-5 bg-[#B31942] hover:bg-[#8e1032] text-white font-['Bebas_Neue'] text-2xl sm:text-3xl tracking-wider rounded-xl uppercase transition-all shadow-xl shadow-red-900/30 flex items-center justify-center gap-3 cursor-pointer group disabled:opacity-50 active:scale-[0.99]"
           >
             {loading ? (
-              <span>INITIALIZING COACHING ENROLLMENT…</span>
+              <span>SECURING COACHING ALLOCATION…</span>
             ) : (
               <>
-                <Crown className="w-5 h-5 text-black" />
-                <span>
-                  {plan === "in_house"
-                    ? `ENROLL IN ${programTitle.toUpperCase()} — $750 DOWN`
-                    : `ENROLL IN ${programTitle.toUpperCase()} — $3,000`}
-                </span>
-                <ArrowRight className="w-5 h-5 text-black" />
+                <span>APPLY FOR PRIVATE COACHING OVERSIGHT</span>
+                <ArrowRight className="w-6 h-6 transition-transform group-hover:translate-x-1" />
               </>
             )}
           </button>
 
-          <button
-            type="button"
-            onClick={onDecline}
-            className="w-full py-3 min-h-[44px] text-xs sm:text-sm text-slate-400 hover:text-slate-200 transition-colors underline font-medium"
-          >
-            No thanks, complete my order with my training programs only
-          </button>
+          <div className="text-center pt-2">
+            <button
+              type="button"
+              onClick={onDecline}
+              className="font-['DM_Mono'] text-xs font-semibold text-slate-400 hover:text-slate-700 uppercase tracking-widest underline underline-offset-4 cursor-pointer transition-colors"
+            >
+              No thanks, I will pass on executive coaching and view my order receipt »
+            </button>
+          </div>
         </div>
+      </div>
+
+      <div className="flex flex-wrap items-center justify-center gap-4 text-slate-500 font-['DM_Mono'] text-[11px] uppercase tracking-wider text-center">
+        <span className="flex items-center gap-1.5">
+          <Lock className="w-3.5 h-3.5 text-emerald-600" />
+          256-Bit SSL Encrypted
+        </span>
+        <span>•</span>
+        <span className="flex items-center gap-1.5">
+          <ShieldCheck className="w-3.5 h-3.5 text-[#0A3161]" />
+          Direct Coach Confidentiality Agreement
+        </span>
       </div>
     </div>
   );

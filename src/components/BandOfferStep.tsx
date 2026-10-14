@@ -1,6 +1,6 @@
 import { getFunnelApiUrl } from "../lib/funnelEngine";
 import React, { useState, useEffect } from "react";
-import { Package, Truck, Check, AlertCircle, ArrowRight } from "lucide-react";
+import { Package, Truck, Check, AlertCircle, ArrowRight, ShieldCheck, Lock } from "lucide-react";
 
 interface BandOfferStepProps {
   funnelId: "funnel_a" | "funnel_b";
@@ -55,7 +55,6 @@ export default function BandOfferStep({
       })
       .catch((err) => {
         console.warn("[BandOfferStep] Status check note:", err?.message);
-        // Default to safe inventory assumption for preview
         if (mounted) {
           setInventory({ totalCap: 30, completedSales: 0, remaining: 30, isSoldOut: false });
         }
@@ -78,7 +77,7 @@ export default function BandOfferStep({
     const cleanPostal = postalCode.trim().toUpperCase();
 
     if (!cleanEmail || !cleanEmail.includes("@")) {
-      setError("Please provide a valid email address for delivery tracking.");
+      setError("Please provide a valid email address for USPS parcel tracking.");
       return;
     }
     if (!cleanName) {
@@ -151,42 +150,42 @@ export default function BandOfferStep({
   const remainingKits = inventory ? Math.max(0, inventory.remaining) : 30;
 
   return (
-    <div className="w-full max-w-3xl mx-auto">
-      {/* ── Scarcity & Offer Banner ────────────────────────────────────────── */}
-      <div className="text-center mb-8">
-        <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-950/70 border border-emerald-800/80 text-emerald-400 text-xs font-mono mb-4">
-          <Package className="w-4 h-4 text-emerald-400" />
-          <span>PHYSICAL HARDWARE ACQUISITION • $0 PRODUCT VALUE</span>
+    <div className="w-full max-w-3xl mx-auto py-2 sm:py-4">
+      {/* ── Scarcity & Offer Header ────────────────────────────────────────── */}
+      <div className="text-center mb-8 sm:mb-10">
+        <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-blue-50 border border-blue-200 text-[#0A3161] text-xs font-['DM_Mono'] font-bold uppercase tracking-[0.25em] mb-4 shadow-2xs">
+          <Package className="w-3.5 h-3.5 text-[#0A3161]" />
+          <span>PHYSICAL HARDWARE ALLOCATION • $0 PRODUCT PROMOTION</span>
         </div>
 
-        <h1 className="text-3xl sm:text-5xl font-black uppercase tracking-tight text-white leading-none">
-          FREE RESISTANCE BANDS
+        <h1 className="font-['Bebas_Neue'] text-4xl sm:text-6xl uppercase tracking-[0.02em] text-slate-900 leading-[0.95] mb-2">
+          CLAIM YOUR <span className="text-[#0A3161]">FREE RESISTANCE BANDS</span>
         </h1>
-        <p className="mt-2 text-xl font-bold text-[#F59E0B]">
-          $15 Shipping & Handling • First 30 Completed Orders Only
+        <p className="font-['DM_Sans'] text-base sm:text-lg text-slate-600 max-w-xl mx-auto leading-relaxed">
+          Official BigRonJones® Heavy-Duty Resistance Band Set ($49 Retail Value). You pay only $15 for insured USPS domestic shipping and handling.
         </p>
 
-        {/* Live Counter Badge */}
-        <div className="mt-4 inline-flex items-center gap-3 px-5 py-2.5 rounded-xl bg-slate-900 border border-amber-500/30">
-          <span className="w-2.5 h-2.5 rounded-full bg-amber-500 animate-pulse" />
-          <span className="text-sm font-mono text-slate-200">
-            Live Inventory: <strong className="text-white text-base">{remainingKits} of 30</strong> kits available
+        {/* Live Inventory Counter Badge */}
+        <div className="mt-5 inline-flex items-center gap-3 px-6 py-2.5 rounded-2xl bg-amber-50 border-2 border-amber-300 text-amber-950 shadow-sm">
+          <span className="w-3 h-3 rounded-full bg-[#B31942] animate-pulse" />
+          <span className="font-['DM_Mono'] text-xs sm:text-sm font-bold uppercase tracking-wider">
+            Live Inventory: <strong className="text-[#B31942] text-sm sm:text-base font-black">{remainingKits} of 30</strong> Kits Remaining
           </span>
         </div>
       </div>
 
       {error && (
-        <div className="mb-6 p-4 rounded-xl bg-red-950/70 border border-red-800 text-red-200 text-sm flex items-center gap-3">
-          <AlertCircle className="w-5 h-5 shrink-0 text-red-400" />
+        <div className="mb-6 p-4 rounded-xl bg-red-50 border border-red-200 text-red-700 text-sm font-['DM_Sans'] flex items-center gap-3">
+          <AlertCircle className="w-5 h-5 shrink-0 text-red-600" />
           <span>{error}</span>
         </div>
       )}
 
       {/* ── Product Showcase ──────────────────────────────────────────────── */}
-      <div className="bg-[#111622] border border-slate-800 rounded-3xl p-6 sm:p-8 shadow-2xl mb-8">
+      <div className="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 shadow-xl mb-8">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
           {/* Image */}
-          <div className="relative rounded-2xl overflow-hidden bg-slate-900 border border-slate-800 aspect-4/3 flex items-center justify-center p-4">
+          <div className="relative rounded-2xl overflow-hidden bg-slate-100 border border-slate-200 aspect-4/3 flex items-center justify-center p-2 shadow-inner">
             <img
               src="/images/ron/band-training.jpg"
               alt="BigRonJones Heavy Duty Resistance Band Set"
@@ -195,59 +194,63 @@ export default function BandOfferStep({
                 (e.target as HTMLImageElement).src = "/images/ron/band-coaching.jpg";
               }}
             />
-            <div className="absolute top-3 left-3 px-2.5 py-1 rounded-md bg-black/80 backdrop-blur-md text-[11px] font-mono font-bold text-amber-400 border border-amber-500/30">
-              OFFICIAL GEAR
+            <div className="absolute top-3 left-3 px-3 py-1 rounded-full bg-[#0A3161] text-white text-[10px] font-['DM_Mono'] font-bold tracking-widest shadow-md">
+              OFFICIAL EQUIPMENT
             </div>
-            <div className="absolute bottom-3 right-3 px-2.5 py-1 rounded-md bg-black/80 backdrop-blur-md text-[11px] font-mono text-slate-300">
+            <div className="absolute bottom-3 right-3 px-3 py-1 rounded-full bg-white/95 backdrop-blur-md text-[11px] font-['DM_Mono'] font-bold text-slate-800 border border-slate-200 shadow-sm">
               $0 KIT + $15 S&H
             </div>
           </div>
 
           {/* Details & Specs */}
           <div>
-            <h2 className="text-xl font-bold text-white mb-2">
-              BigRonJones® Heavy-Duty Resistance Band Set
+            <h2 className="font-['Bebas_Neue'] text-2xl sm:text-3xl text-slate-900 tracking-wide uppercase mb-2">
+              BIGRONJONES® HEAVY-DUTY BAND SET
             </h2>
-            <p className="text-xs text-slate-400 mb-4 leading-relaxed">
-              Engineered for real progressive overload, joint-friendly mechanics, and travel training. Built so you have zero excuses whether training at home, outdoors, or in the gym.
+            <p className="font-['DM_Sans'] text-xs sm:text-sm text-slate-600 mb-5 leading-relaxed">
+              Engineered for genuine progressive overload, joint-friendly biomechanics, and travel training. Eliminates every excuse whether training at home, on business, or in the gym.
             </p>
 
-            <ul className="space-y-2 text-xs text-slate-300 font-medium mb-6">
-              <li className="flex items-center gap-2">
-                <Check className="w-4 h-4 text-emerald-400 shrink-0" />
+            <ul className="space-y-2.5 text-xs sm:text-sm text-slate-700 font-medium mb-6 font-['DM_Sans']">
+              <li className="flex items-center gap-2.5">
+                <Check className="w-4 h-4 text-emerald-600 shrink-0" />
                 <span>Commercial grade, anti-snap layered latex</span>
               </li>
-              <li className="flex items-center gap-2">
-                <Check className="w-4 h-4 text-emerald-400 shrink-0" />
-                <span>Multiple resistance tension tiers</span>
+              <li className="flex items-center gap-2.5">
+                <Check className="w-4 h-4 text-emerald-600 shrink-0" />
+                <span>Full progressive tension range (10 lbs - 50+ lbs)</span>
               </li>
-              <li className="flex items-center gap-2">
-                <Check className="w-4 h-4 text-emerald-400 shrink-0" />
-                <span>Ships directly to your address within 3-5 business days</span>
+              <li className="flex items-center gap-2.5">
+                <Check className="w-4 h-4 text-emerald-600 shrink-0" />
+                <span>Heavy-duty door anchor & cushioned ergonomic grips</span>
               </li>
-              <li className="flex items-center gap-2">
-                <Check className="w-4 h-4 text-emerald-400 shrink-0" />
-                <span>Strict limit: 1 kit per customer (shared 30-cap)</span>
+              <li className="flex items-center gap-2.5">
+                <Check className="w-4 h-4 text-emerald-600 shrink-0" />
+                <span>Ships via insured USPS Priority within 3-5 business days</span>
+              </li>
+              <li className="flex items-center gap-2.5">
+                <Check className="w-4 h-4 text-emerald-600 shrink-0" />
+                <span>Strict limit: 1 promotional kit per household</span>
               </li>
             </ul>
 
             {/* Pricing Breakdown */}
-            <div className="p-3.5 rounded-xl bg-slate-900 border border-slate-800 space-y-1.5 text-xs font-mono">
-              <div className="flex justify-between text-slate-400">
+            <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-2 text-xs font-['DM_Mono']">
+              <div className="flex justify-between text-slate-500">
                 <span>Resistance Band Kit:</span>
-                <span className="line-through text-slate-500">$49.00</span>
+                <span className="line-through text-slate-400">$49.00</span>
               </div>
-              <div className="flex justify-between text-emerald-400 font-bold">
-                <span>Promotional Band Price:</span>
-                <span>$0.00 (FREE)</span>
+              <div className="flex justify-between text-emerald-700 font-bold">
+                <span>Promotional Gear Credit:</span>
+                <span>-$49.00 (100% FREE)</span>
               </div>
-              <div className="flex justify-between text-white font-semibold pt-1 border-t border-slate-800">
-                <span>Insured Tracked Shipping:</span>
+              <div className="flex justify-between text-slate-700 font-semibold pt-1 border-t border-slate-200">
+                <span>Insured USPS Tracked Shipping:</span>
                 <span>$15.00</span>
               </div>
-              <div className="flex justify-between text-amber-400 font-extrabold text-sm pt-1 border-t border-slate-800">
+              <div className="flex justify-between text-[#0A3161] font-black text-sm pt-1 border-t border-slate-200">
                 <span>TOTAL DUE TODAY:</span>
-                <span>$15.00</span>
+                <span className="text-[#B31942] text-base font-black">$15.00</span>
               </div>
             </div>
           </div>
@@ -255,112 +258,153 @@ export default function BandOfferStep({
       </div>
 
       {/* ── Shipping & Claim Form ─────────────────────────────────────────── */}
-      <form onSubmit={handleClaim} className="bg-[#111622] border border-slate-800 rounded-3xl p-6 sm:p-8 shadow-2xl">
-        <h3 className="text-base font-bold text-white mb-4 flex items-center gap-2">
-          <Truck className="w-4 h-4 text-blue-400" />
-          <span>Enter Physical Shipping Address</span>
-        </h3>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
+      <form onSubmit={handleClaim} className="bg-white border-2 border-[#0A3161]/30 rounded-3xl p-6 sm:p-8 shadow-2xl">
+        <div className="flex items-center gap-3 pb-4 mb-6 border-b border-slate-200">
+          <div className="w-10 h-10 rounded-xl bg-blue-50 border border-blue-100 flex items-center justify-center text-[#0A3161] shrink-0">
+            <Truck className="w-5 h-5 text-[#0A3161]" />
+          </div>
           <div>
-            <label className="block text-xs text-slate-400 mb-1 font-medium">Full Name *</label>
-            <input
-              type="text"
-              required
-              placeholder="Full name for delivery"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              className="w-full px-3.5 py-2.5 bg-slate-900 border border-slate-700 rounded-xl text-white text-base sm:text-sm focus:outline-none focus:border-blue-500"
-            />
+            <h3 className="font-['Bebas_Neue'] text-2xl sm:text-3xl text-slate-900 tracking-wide uppercase leading-none">
+              WHERE SHOULD WE SHIP YOUR RESISTANCE BANDS?
+            </h3>
+            <p className="font-['DM_Sans'] text-xs sm:text-sm text-slate-500 mt-1">
+              Provide your delivery address below for immediate USPS dispatch.
+            </p>
           </div>
+        </div>
 
-          <div>
-            <label className="block text-xs text-slate-400 mb-1 font-medium">Email Address (For Tracking) *</label>
-            <input
-              type="email"
-              required
-              placeholder="receipt@example.com"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="w-full px-3.5 py-2.5 bg-slate-900 border border-slate-700 rounded-xl text-white text-base sm:text-sm focus:outline-none focus:border-blue-500"
-            />
-          </div>
-
-          <div className="sm:col-span-2">
-            <label className="block text-xs text-slate-400 mb-1 font-medium">Street Address *</label>
-            <input
-              type="text"
-              required
-              placeholder="123 Main St, Apt 4B"
-              value={addressLine1}
-              onChange={(e) => setAddressLine1(e.target.value)}
-              className="w-full px-3.5 py-2.5 bg-slate-900 border border-slate-700 rounded-xl text-white text-base sm:text-sm focus:outline-none focus:border-blue-500"
-            />
-          </div>
-
-          <div>
-            <label className="block text-xs text-slate-400 mb-1 font-medium">City *</label>
-            <input
-              type="text"
-              required
-              placeholder="City"
-              value={city}
-              onChange={(e) => setCity(e.target.value)}
-              className="w-full px-3.5 py-2.5 bg-slate-900 border border-slate-700 rounded-xl text-white text-base sm:text-sm focus:outline-none focus:border-blue-500"
-            />
-          </div>
-
-          <div className="grid grid-cols-2 gap-2">
+        <div className="space-y-4 mb-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="block text-xs text-slate-400 mb-1 font-medium">State *</label>
+              <label className="block text-xs font-['DM_Mono'] font-bold uppercase tracking-wider text-slate-700 mb-1.5">
+                Full Name *
+              </label>
               <input
                 type="text"
                 required
-                placeholder="State / Province"
-                value={state}
-                onChange={(e) => setState(e.target.value)}
-                className="w-full px-3 py-2.5 bg-slate-900 border border-slate-700 rounded-xl text-white text-base sm:text-sm focus:outline-none focus:border-blue-500 uppercase"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                placeholder="Marcus Vance"
+                className="w-full px-4 py-3.5 rounded-xl border border-slate-300 bg-white text-slate-900 text-sm font-medium focus:border-[#0A3161] focus:ring-2 focus:ring-[#0A3161]/20 outline-none shadow-2xs"
               />
             </div>
+
             <div>
-              <label className="block text-xs text-slate-400 mb-1 font-medium">Zip *</label>
+              <label className="block text-xs font-['DM_Mono'] font-bold uppercase tracking-wider text-slate-700 mb-1.5">
+                Email Address (USPS Tracking) *
+              </label>
+              <input
+                type="email"
+                required
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="name@example.com"
+                className="w-full px-4 py-3.5 rounded-xl border border-slate-300 bg-white text-slate-900 text-sm font-medium focus:border-[#0A3161] focus:ring-2 focus:ring-[#0A3161]/20 outline-none shadow-2xs"
+              />
+            </div>
+          </div>
+
+          <div>
+            <label className="block text-xs font-['DM_Mono'] font-bold uppercase tracking-wider text-slate-700 mb-1.5">
+              Phone Number (Delivery Notifications)
+            </label>
+            <input
+              type="tel"
+              value={phone}
+              onChange={(e) => setPhone(e.target.value)}
+              placeholder="(555) 000-0000"
+              className="w-full px-4 py-3.5 rounded-xl border border-slate-300 bg-white text-slate-900 text-sm font-medium focus:border-[#0A3161] focus:ring-2 focus:ring-[#0A3161]/20 outline-none shadow-2xs"
+            />
+          </div>
+
+          <div>
+            <label className="block text-xs font-['DM_Mono'] font-bold uppercase tracking-wider text-slate-700 mb-1.5">
+              Street Address *
+            </label>
+            <input
+              type="text"
+              required
+              value={addressLine1}
+              onChange={(e) => setAddressLine1(e.target.value)}
+              placeholder="123 Performance Way, Apt 4B"
+              className="w-full px-4 py-3.5 rounded-xl border border-slate-300 bg-white text-slate-900 text-sm font-medium focus:border-[#0A3161] focus:ring-2 focus:ring-[#0A3161]/20 outline-none shadow-2xs"
+            />
+          </div>
+
+          <div className="grid grid-cols-3 gap-3">
+            <div>
+              <label className="block text-xs font-['DM_Mono'] font-bold uppercase tracking-wider text-slate-700 mb-1.5">
+                City *
+              </label>
               <input
                 type="text"
                 required
-                placeholder="Postal code"
+                value={city}
+                onChange={(e) => setCity(e.target.value)}
+                placeholder="Dallas"
+                className="w-full px-3.5 py-3.5 rounded-xl border border-slate-300 bg-white text-slate-900 text-sm font-medium focus:border-[#0A3161] focus:ring-2 focus:ring-[#0A3161]/20 outline-none shadow-2xs"
+              />
+            </div>
+
+            <div>
+              <label className="block text-xs font-['DM_Mono'] font-bold uppercase tracking-wider text-slate-700 mb-1.5">
+                State *
+              </label>
+              <input
+                type="text"
+                required
+                maxLength={2}
+                value={state}
+                onChange={(e) => setState(e.target.value)}
+                placeholder="TX"
+                className="w-full px-3.5 py-3.5 rounded-xl border border-slate-300 bg-white text-slate-900 text-sm font-medium focus:border-[#0A3161] focus:ring-2 focus:ring-[#0A3161]/20 outline-none uppercase shadow-2xs"
+              />
+            </div>
+
+            <div>
+              <label className="block text-xs font-['DM_Mono'] font-bold uppercase tracking-wider text-slate-700 mb-1.5">
+                ZIP Code *
+              </label>
+              <input
+                type="text"
+                required
                 value={postalCode}
                 onChange={(e) => setPostalCode(e.target.value)}
-                className="w-full px-3 py-2.5 bg-slate-900 border border-slate-700 rounded-xl text-white text-base sm:text-sm focus:outline-none focus:border-blue-500 uppercase"
+                placeholder="75001"
+                className="w-full px-3.5 py-3.5 rounded-xl border border-slate-300 bg-white text-slate-900 text-sm font-medium focus:border-[#0A3161] focus:ring-2 focus:ring-[#0A3161]/20 outline-none shadow-2xs"
               />
             </div>
           </div>
         </div>
 
-        {/* CTA Buttons */}
-        <div className="space-y-3 pt-2">
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full py-4 px-6 min-h-[52px] bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400 text-white font-extrabold text-base uppercase tracking-wider rounded-xl shadow-xl hover:shadow-emerald-500/20 transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
-          >
-            {loading ? (
-              <span>RESERVING KIT & INITIALIZING PAYMENT…</span>
-            ) : (
-              <>
-                <span>CLAIM MY FREE BANDS • $15 SHIPPING</span>
-                <ArrowRight className="w-5 h-5" />
-              </>
-            )}
-          </button>
+        {/* High-Converting Primary Red CTA */}
+        <button
+          type="submit"
+          disabled={loading}
+          className="w-full py-4 sm:py-5 bg-[#B31942] hover:bg-[#8e1032] text-white font-['Bebas_Neue'] text-2xl sm:text-3xl tracking-wider rounded-xl uppercase transition-all shadow-xl shadow-red-900/30 flex items-center justify-center gap-3 cursor-pointer group disabled:opacity-50 active:scale-[0.99]"
+        >
+          {loading ? (
+            <span>PREPARING SECURE CHECKOUT...</span>
+          ) : (
+            <>
+              <span>CLAIM MY FREE BANDS NOW (PAY $15 S&amp;H)</span>
+              <ArrowRight className="w-6 h-6 transition-transform group-hover:translate-x-1" />
+            </>
+          )}
+        </button>
 
-          {/* Decline / Skip Option */}
-          <button
-            type="button"
-            onClick={onDecline}
-            className="w-full py-3 min-h-[44px] text-xs sm:text-sm text-slate-400 hover:text-slate-200 transition-colors underline font-medium"
-          >
-            No thanks, I will train with my own equipment (continue to my prescription)
-          </button>
+        <div className="mt-4 flex flex-wrap items-center justify-center gap-4 text-slate-500 font-['DM_Mono'] text-[11px] uppercase tracking-wider">
+          <span className="flex items-center gap-1.5">
+            <Lock className="w-3.5 h-3.5 text-emerald-600" />
+            256-Bit SSL Encryption
+          </span>
+          <span>•</span>
+          <span className="flex items-center gap-1.5">
+            <ShieldCheck className="w-3.5 h-3.5 text-[#0A3161]" />
+            Official BigRonJones® Guarantee
+          </span>
+          <span>•</span>
+          <span>USPS Domestic Priority</span>
         </div>
       </form>
     </div>

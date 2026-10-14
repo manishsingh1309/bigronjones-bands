@@ -182,7 +182,7 @@ export default function FunnelB() {
       currentStep={stepNumber}
       totalSteps={totalSteps}
       stepLabel={stepLabel}
-      funnelTitle="Funnel Layout 2 • Paid Ads to Bands First"
+      funnelTitle="RESISTANCE GEAR & ATHLETIC PROTOCOL"
       onBack={
         step === "assessment" && !bandsSoldOut
           ? () => setStep("bands")

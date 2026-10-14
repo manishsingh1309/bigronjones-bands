@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Sparkles, Check, ArrowRight, AlertCircle, BookmarkCheck } from "lucide-react";
+import { Sparkles, Check, ArrowRight, AlertCircle, BookmarkCheck, Lock, ShieldCheck } from "lucide-react";
 import { getFunnelApiUrl } from "../lib/funnelEngine";
 import { programSeries, getProgramSeriesItem, type ProgramSeriesItem } from "../lib/programSeries";
 
@@ -88,7 +88,6 @@ export default function TwoPackUpsellStep({
       throw new Error(data.error || `Checkout returned status ${res.status}`);
     } catch (err: any) {
       console.warn("[TwoPackUpsell] Checkout warning:", err);
-      // Fallback for standalone preview or test mode so flow can be thoroughly audited end-to-end
       if (
         window.location.hostname === "localhost" ||
         window.location.hostname.includes("vercel.app") ||
@@ -105,105 +104,113 @@ export default function TwoPackUpsellStep({
   };
 
   return (
-    <div className="w-full max-w-3xl mx-auto">
+    <div className="w-full max-w-3xl mx-auto py-2 sm:py-4">
       {/* ── Heading ────────────────────────────────────────────────────────── */}
-      <div className="text-center mb-8">
-        <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-purple-950/70 border border-purple-800 text-purple-400 text-xs font-mono mb-3">
-          <Sparkles className="w-4 h-4 text-purple-300" />
-          <span>COMPLEMENTARY PROGRAM BUNDLE • 20% DISCOUNT</span>
+      <div className="text-center mb-8 sm:mb-10">
+        <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-blue-50 border border-blue-200 text-[#0A3161] text-xs font-['DM_Mono'] font-bold uppercase tracking-[0.25em] mb-4 shadow-2xs">
+          <Sparkles className="w-3.5 h-3.5 text-[#0A3161]" />
+          <span>SPECIAL BUNDLE ACCELERATOR • SAVE 20% TODAY</span>
         </div>
 
-        <h1 className="text-3xl sm:text-5xl font-black uppercase tracking-tight text-white leading-tight">
-          CHOOSE 2 MORE PROGRAMS
+        <h1 className="font-['Bebas_Neue'] text-4xl sm:text-6xl uppercase tracking-[0.02em] text-slate-900 leading-[0.95] mb-2">
+          CHOOSE 2 COMPANION <span className="text-[#0A3161]">TRAINING PROTOCOLS</span>
         </h1>
-        <p className="mt-2 text-base text-[#F59E0B] font-bold">
-          20% Off Each Program • $199.20 Each (Total $398.40)
-        </p>
-        <p className="mt-1 text-xs sm:text-sm text-slate-400 max-w-lg mx-auto">
-          Expand your training stack across power, endurance, or mobility. Select any two distinct programs below.
+        <p className="font-['DM_Sans'] text-base sm:text-lg text-slate-600 max-w-xl mx-auto leading-relaxed">
+          Expand your athletic foundation across strength, mobility, and endurance. Add any 2 companion programs for just $398.40 (Save $99.60 today).
         </p>
 
         {purchasedProgram && (
-          <div className="mt-4 inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-950/50 border border-emerald-800/60 text-xs text-emerald-300 font-mono">
-            <BookmarkCheck className="w-4 h-4 text-emerald-400" />
-            <span>Already Secured: <strong>{purchasedProgram.title}</strong> ($249)</span>
+          <div className="mt-4 inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-50 border border-emerald-200 text-xs text-emerald-800 font-['DM_Mono'] font-bold">
+            <BookmarkCheck className="w-4 h-4 text-emerald-600" />
+            <span>Already Enrolled: <strong>{purchasedProgram.title}</strong></span>
           </div>
         )}
       </div>
 
       {error && (
-        <div className="mb-6 p-4 rounded-xl bg-red-950/70 border border-red-800 text-red-200 text-sm flex items-center gap-2">
-          <AlertCircle className="w-5 h-5 shrink-0 text-red-400" />
+        <div className="mb-6 p-4 rounded-xl bg-red-50 border border-red-200 text-red-700 text-sm font-['DM_Sans'] flex items-center gap-2">
+          <AlertCircle className="w-5 h-5 shrink-0 text-red-600" />
           <span>{error}</span>
         </div>
       )}
 
-      {/* ── Selection Indicator ───────────────────────────────────────────── */}
-      <div className="bg-[#111622] border border-slate-800 rounded-2xl p-4 mb-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs font-mono">
-        <div className="flex items-center gap-2 text-slate-300">
-          <span>Selected:</span>
-          <span className="font-bold text-white text-sm bg-purple-950/80 px-2.5 py-0.5 rounded-lg border border-purple-700/60">
-            {selectedIds.length} of 2 programs
+      {/* ── Selection Grid ────────────────────────────────────────────────── */}
+      <div className="mb-8">
+        <div className="flex items-center justify-between mb-4 px-1">
+          <span className="font-['DM_Mono'] text-xs uppercase tracking-wider text-slate-600 font-bold">
+            Select Any 2 Companion Protocols:
+          </span>
+          <span className="font-['DM_Mono'] text-xs font-bold text-[#0A3161] bg-blue-50 px-3 py-1 rounded-full border border-blue-200">
+            {selectedIds.length} of 2 Selected
           </span>
         </div>
-        <div className="text-purple-300 font-semibold text-xs sm:text-sm">
-          Bundle Total: <strong className="text-white text-base font-sans">$398.40</strong> <span className="line-through text-slate-500 font-sans">$498.00</span>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          {eligiblePrograms.map((p: ProgramSeriesItem) => {
+            const isSelected = selectedIds.includes(p.id);
+            return (
+              <div
+                key={p.id}
+                onClick={() => toggleProgram(p.id)}
+                className={`p-4 rounded-2xl border-2 transition-all cursor-pointer flex gap-4 items-center ${
+                  isSelected
+                    ? "bg-blue-50/70 border-[#0A3161] ring-2 ring-[#0A3161]/20 shadow-md"
+                    : "bg-white border-slate-200 hover:border-slate-300 hover:bg-slate-50/50 shadow-xs"
+                }`}
+              >
+                <div className="w-20 h-20 rounded-xl overflow-hidden bg-slate-100 shrink-0 border border-slate-200">
+                  <img
+                    src={p.image || `/programs/thumb-${p.id}.jpg`}
+                    alt={p.title}
+                    className="w-full h-full object-cover"
+                    onError={(e) => {
+                      (e.target as HTMLImageElement).src = `/programs/thumb-${p.id}.webp`;
+                    }}
+                  />
+                </div>
+
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center justify-between gap-2 mb-1">
+                    <span className="font-['Bebas_Neue'] text-lg text-slate-900 tracking-wide uppercase truncate">
+                      {p.title}
+                    </span>
+                    <div
+                      className={`w-5 h-5 rounded-md border flex items-center justify-center shrink-0 transition-colors ${
+                        isSelected
+                          ? "bg-[#0A3161] border-[#0A3161] text-white"
+                          : "border-slate-300 bg-white"
+                      }`}
+                    >
+                      {isSelected && <Check className="w-3.5 h-3.5 stroke-[3]" />}
+                    </div>
+                  </div>
+                  <p className="font-['DM_Sans'] text-xs text-slate-500 line-clamp-2 leading-relaxed">
+                    {p.blurb}
+                  </p>
+                  <span className="inline-block mt-1 font-['DM_Mono'] text-[10px] text-[#0A3161] font-bold uppercase tracking-wider">
+                    {p.focus}
+                  </span>
+                </div>
+              </div>
+            );
+          })}
         </div>
       </div>
 
-      {/* ── Eligible Programs Grid ────────────────────────────────────────── */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 mb-8">
-        {eligiblePrograms.map((prog: ProgramSeriesItem) => {
-          const isSelected = selectedIds.includes(prog.id);
-          return (
-            <button
-              key={prog.id}
-              type="button"
-              onClick={() => toggleProgram(prog.id)}
-              className={`p-4 rounded-2xl text-left border transition-all flex flex-col justify-between cursor-pointer min-h-[140px] ${
-                isSelected
-                  ? "bg-[#0A3161]/90 border-purple-500 ring-2 ring-purple-500/30 text-white shadow-lg"
-                  : "bg-[#111622] border-slate-800/80 hover:border-slate-700 text-slate-300"
-              }`}
-            >
-              <div>
-                <div className="flex items-center justify-between mb-1.5">
-                  <span className="text-[11px] font-mono text-purple-400 font-bold uppercase">
-                    PROGRAM 0{prog.id}
-                  </span>
-                  <div
-                    className={`w-6 h-6 rounded-md flex items-center justify-center border transition-all ${
-                      isSelected
-                        ? "bg-purple-600 border-purple-500 text-white"
-                        : "border-slate-700 bg-slate-900"
-                    }`}
-                  >
-                    {isSelected && <Check className="w-4 h-4" />}
-                  </div>
-                </div>
-
-                <div className="font-bold text-base text-white mb-1">{prog.title}</div>
-                <div className="text-xs text-slate-400 leading-relaxed mb-3">{prog.blurb}</div>
-              </div>
-
-              <div className="pt-2 border-t border-slate-800/80 flex items-center justify-between text-xs font-mono">
-                <span className="text-slate-400">{prog.focus}</span>
-                <span className="text-emerald-400 font-bold text-sm">$199.20</span>
-              </div>
-            </button>
-          );
-        })}
-      </div>
-
-      {/* ── Checkout & Continue ───────────────────────────────────────────── */}
-      <div className="bg-[#111622] border border-slate-800 rounded-3xl p-6 sm:p-8 shadow-2xl space-y-4">
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pb-4 border-b border-slate-800">
-          <div>
-            <div className="text-xs font-mono uppercase text-slate-400">Total for Two Additional Programs:</div>
-            <div className="text-3xl font-black text-white">$398.40</div>
+      {/* ── Bundle Summary & CTA ─────────────────────────────────────────── */}
+      <div className="bg-white border-2 border-[#0A3161]/30 rounded-3xl p-6 sm:p-8 shadow-2xl mb-8">
+        <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-2 text-xs font-['DM_Mono'] mb-6">
+          <div className="flex justify-between text-slate-500">
+            <span>2 Companion Training Programs:</span>
+            <span className="line-through text-slate-400">$498.00</span>
           </div>
-          <div className="text-right text-xs font-mono text-emerald-400 font-bold bg-emerald-950/60 border border-emerald-800/60 px-3 py-1.5 rounded-xl">
-            YOU SAVE $99.60 (20% OFF)
+          <div className="flex justify-between text-emerald-700 font-bold">
+            <span>20% Bundle Savings:</span>
+            <span>-$99.60 (20% OFF)</span>
+          </div>
+          <div className="flex justify-between text-slate-900 font-bold pt-2 border-t border-slate-200 text-sm">
+            <span>TOTAL DUE TODAY:</span>
+            <span className="text-[#B31942] text-xl font-black">$398.40</span>
           </div>
         </div>
 
@@ -211,25 +218,39 @@ export default function TwoPackUpsellStep({
           type="button"
           onClick={handleCheckout}
           disabled={loading || selectedIds.length !== 2}
-          className="w-full py-4 px-6 min-h-[52px] bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white font-extrabold text-base uppercase tracking-wider rounded-xl shadow-xl hover:shadow-purple-500/20 transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-40"
+          className="w-full py-4 sm:py-5 bg-[#B31942] hover:bg-[#8e1032] text-white font-['Bebas_Neue'] text-2xl sm:text-3xl tracking-wider rounded-xl uppercase transition-all shadow-xl shadow-red-900/30 flex items-center justify-center gap-3 cursor-pointer group disabled:opacity-50 active:scale-[0.99]"
         >
           {loading ? (
-            <span>PROCESSING TWO-PROGRAM SELECTION…</span>
+            <span>PROCESSING 2-PROGRAM BUNDLE…</span>
           ) : (
             <>
-              <span>ADD 2 ADDITIONAL PROGRAMS — $398.40</span>
-              <ArrowRight className="w-5 h-5" />
+              <span>ADD 2 PROGRAMS FOR $398.40 (SAVE $99.60)</span>
+              <ArrowRight className="w-6 h-6 transition-transform group-hover:translate-x-1" />
             </>
           )}
         </button>
 
-        <button
-          type="button"
-          onClick={onDecline}
-          className="w-full py-3 min-h-[44px] text-xs sm:text-sm text-slate-400 hover:text-slate-200 transition-colors underline font-medium cursor-pointer"
-        >
-          No thanks, I will stick with my single purchased program (continue to next step)
-        </button>
+        <div className="text-center pt-3">
+          <button
+            type="button"
+            onClick={onDecline}
+            className="font-['DM_Mono'] text-xs font-semibold text-slate-400 hover:text-slate-700 uppercase tracking-widest underline underline-offset-4 cursor-pointer transition-colors"
+          >
+            No thanks, I will stick with my single program »
+          </button>
+        </div>
+      </div>
+
+      <div className="flex flex-wrap items-center justify-center gap-4 text-slate-500 font-['DM_Mono'] text-[11px] uppercase tracking-wider text-center">
+        <span className="flex items-center gap-1.5">
+          <Lock className="w-3.5 h-3.5 text-emerald-600" />
+          256-Bit SSL Encrypted
+        </span>
+        <span>•</span>
+        <span className="flex items-center gap-1.5">
+          <ShieldCheck className="w-3.5 h-3.5 text-[#0A3161]" />
+          Lifetime Portal Access Included
+        </span>
       </div>
     </div>
   );
