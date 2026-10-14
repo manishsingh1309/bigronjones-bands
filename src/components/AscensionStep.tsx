@@ -1,3 +1,4 @@
+import { getFunnelApiUrl } from "../lib/funnelEngine";
 import React, { useState } from "react";
 import { Crown, Check, ArrowRight, ShieldCheck, Video, Calendar, Sparkles } from "lucide-react";
 
@@ -33,7 +34,7 @@ export default function AscensionStep({
     setError(null);
 
     try {
-      const res = await fetch("/api/funnels/checkout", {
+      const res = await fetch(getFunnelApiUrl("/api/funnels/checkout"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

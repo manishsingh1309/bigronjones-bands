@@ -9,7 +9,7 @@ import AscensionStep from "./AscensionStep";
 import ConfirmationStep from "./ConfirmationStep";
 import NeutralExitStep from "./NeutralExitStep";
 import { getProgramSeriesItem, type ProgramSeriesItem } from "../lib/programSeries";
-import { evaluatePrescription } from "../lib/funnelEngine";
+import { evaluatePrescription, getFunnelApiUrl } from "../lib/funnelEngine";
 
 type FunnelAStep =
   | "assessment"        // Step 1: Mandatory Fitness Assessment
@@ -72,7 +72,7 @@ export default function FunnelA() {
 
   // Check band inventory on mount
   useEffect(() => {
-    fetch("/api/funnels/status")
+    fetch(getFunnelApiUrl("/api/funnels/status"))
       .then((res) => {
         if (!res.ok) throw new Error("status unavailable");
         return res.json();

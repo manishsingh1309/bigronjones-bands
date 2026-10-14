@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { Sparkles, Check, ArrowRight, AlertCircle, BookmarkCheck } from "lucide-react";
+import { getFunnelApiUrl } from "../lib/funnelEngine";
 import { programSeries, getProgramSeriesItem, type ProgramSeriesItem } from "../lib/programSeries";
 
 interface TwoPackUpsellStepProps {
@@ -59,7 +60,7 @@ export default function TwoPackUpsellStep({
     const chosenPrograms = getSelectedProgramObjects();
 
     try {
-      const res = await fetch("/api/funnels/checkout", {
+      const res = await fetch(getFunnelApiUrl("/api/funnels/checkout"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

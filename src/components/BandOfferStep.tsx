@@ -1,3 +1,4 @@
+import { getFunnelApiUrl } from "../lib/funnelEngine";
 import React, { useState, useEffect } from "react";
 import { Package, Truck, Check, AlertCircle, ArrowRight } from "lucide-react";
 
@@ -38,7 +39,7 @@ export default function BandOfferStep({
 
   useEffect(() => {
     let mounted = true;
-    fetch("/api/funnels/status")
+    fetch(getFunnelApiUrl("/api/funnels/status"))
       .then((res) => {
         if (!res.ok) throw new Error("Status endpoint unavailable");
         return res.json();
@@ -92,7 +93,7 @@ export default function BandOfferStep({
     setLoading(true);
 
     try {
-      const res = await fetch("/api/funnels/checkout", {
+      const res = await fetch(getFunnelApiUrl("/api/funnels/checkout"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

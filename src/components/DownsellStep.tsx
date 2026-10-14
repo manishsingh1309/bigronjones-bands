@@ -1,3 +1,4 @@
+import { getFunnelApiUrl } from "../lib/funnelEngine";
 import React, { useState } from "react";
 import { ArrowRight, Check, X, ShieldAlert } from "lucide-react";
 import type { ProgramSeriesItem } from "../lib/programSeries";
@@ -27,7 +28,7 @@ export default function DownsellStep({
     setError(null);
 
     try {
-      const res = await fetch("/api/funnels/checkout", {
+      const res = await fetch(getFunnelApiUrl("/api/funnels/checkout"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

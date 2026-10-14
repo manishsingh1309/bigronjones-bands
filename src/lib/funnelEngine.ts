@@ -10,6 +10,28 @@ export const TWO_PACK_TOTAL_USD = 398.40; // $199.20 * 2
 export const ASCENSION_PIF_USD = 3000;
 export const ASCENSION_IN_HOUSE_MONTHLY_USD = 750;
 
+/**
+ * Resolves the authoritative backend endpoint URL.
+ * Automatically targets https://bigronjones-2ah1.onrender.com when running
+ * on live domains, or respects VITE_API_URL / relative proxies in dev.
+ */
+export function getFunnelApiUrl(endpoint: string): string {
+  const envUrl = (import.meta as any).env?.VITE_API_URL || (import.meta as any).env?.VITE_BACKEND_URL;
+  if (envUrl) {
+    return `${envUrl.replace(/\/+$/, "")}${endpoint}`;
+  }
+
+  if (
+    typeof window !== "undefined" &&
+    (window.location.hostname.endsWith("bigronjones.com") ||
+     window.location.hostname.endsWith("onrender.com"))
+  ) {
+    return `https://bigronjones-2ah1.onrender.com${endpoint}`;
+  }
+
+  return endpoint;
+}
+
 export type AssessmentAnswers = {
   gender: "Male" | "Female";
   goal: string;
@@ -97,7 +119,7 @@ export async function fetchBandInventoryStatus(): Promise<{
   isSoldOut: boolean;
 }> {
   try {
-    const res = await fetch("/api/funnels/status");
+    const res = await fetch(getFunnelApiUrl("/api/funnels/status"));
     if (res.ok) {
       return await res.json();
     }

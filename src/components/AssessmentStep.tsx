@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Target, ArrowRight, CheckCircle2, User, Mail, Phone, Sparkles } from "lucide-react";
-import { evaluatePrescription } from "../lib/funnelEngine";
+import { evaluatePrescription, getFunnelApiUrl } from "../lib/funnelEngine";
 
 export interface AssessmentData {
   gender: "Male" | "Female";
@@ -111,7 +111,7 @@ export default function AssessmentStep({
         console.warn("sessionStorage write note:", e);
       }
 
-      const res = await fetch("/api/funnels/assessment", {
+      const res = await fetch(getFunnelApiUrl("/api/funnels/assessment"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
