@@ -1,3 +1,4 @@
+import { evaluatePrescription } from "../lib/funnelEngine";
 import React, { useState } from "react";
 import { Target, ArrowRight, CheckCircle2, User, Mail, Phone, Dumbbell, Sparkles } from "lucide-react";
 
@@ -84,20 +85,21 @@ export default function AssessmentStep({
       return;
     }
 
+    const payload: AssessmentData = {
+      gender,
+      goal,
+      level,
+      obstacle,
+      environment,
+      supportLevel,
+      fullName: fullName.trim(),
+      email: email.trim().toLowerCase(),
+      phone: phone.trim(),
+    };
+
     setLoading(true);
 
     try {
-      const payload: AssessmentData = {
-        gender,
-        goal,
-        level,
-        obstacle,
-        environment,
-        supportLevel,
-        fullName: fullName.trim(),
-        email: email.trim().toLowerCase(),
-        phone: phone.trim(),
-      };
 
       const res = await fetch("/api/funnels/assessment", {
         method: "POST",
@@ -117,7 +119,13 @@ export default function AssessmentStep({
 
       onComplete(payload, data.prescription);
     } catch (err: any) {
-      setError(err?.message || "Connection error. Please try again.");
+      console.warn("[AssessmentStep] API error, falling back to local prescription engine:", err);
+      try {
+        const localPrescription = evaluatePrescription(payload);
+        onComplete(payload, localPrescription);
+      } catch {
+        setError(err?.message || "Connection error. Please try again.");
+      }
     } finally {
       setLoading(false);
     }

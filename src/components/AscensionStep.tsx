@@ -93,7 +93,7 @@ export default function AscensionStep({
           {/* Coach Photo & Badge */}
           <div className="relative rounded-2xl overflow-hidden aspect-4/3 bg-slate-900 border border-slate-800">
             <img
-              src={isWomens ? "/assets/bigronjones/Women's wellness program.PNG" : "/images/ron/ron-hero.jpg"}
+              src={isWomens ? "/assets/client-stories/selena-800.jpg" : "/images/ron/ron-hero.jpg"}
               alt={programTitle}
               className="w-full h-full object-cover"
               onError={(e) => {
