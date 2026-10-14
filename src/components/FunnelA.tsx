@@ -8,7 +8,8 @@ import TwoPackUpsellStep from "./TwoPackUpsellStep";
 import AscensionStep from "./AscensionStep";
 import ConfirmationStep from "./ConfirmationStep";
 import NeutralExitStep from "./NeutralExitStep";
-import type { ProgramSeriesItem } from "../lib/programSeries";
+import { getProgramSeriesItem, type ProgramSeriesItem } from "../lib/programSeries";
+import { evaluatePrescription } from "../lib/funnelEngine";
 
 type FunnelAStep =
   | "assessment"        // Step 1: Mandatory Fitness Assessment
@@ -20,28 +21,68 @@ type FunnelAStep =
   | "confirmation"      // Confirmed purchase
   | "neutral_exit";     // Declined both $249 and $199
 
+// Helpers to load/save state across full-page Stripe redirects
+function loadSessionState<T>(key: string): T | null {
+  try {
+    const s = sessionStorage.getItem(key);
+    return s ? JSON.parse(s) : null;
+  } catch {
+    return null;
+  }
+}
+
+function saveSessionState(key: string, val: any) {
+  try {
+    sessionStorage.setItem(key, JSON.stringify(val));
+  } catch (e) {
+    console.warn("Session storage write error:", e);
+  }
+}
+
 export default function FunnelA() {
   const [step, setStep] = useState<FunnelAStep>("assessment");
-  const [assessmentData, setAssessmentData] = useState<AssessmentData | null>(null);
-  const [prescription, setPrescription] = useState<any>(null);
-  const [bandsClaimed, setBandsClaimed] = useState(false);
+  const [assessmentData, setAssessmentData] = useState<AssessmentData | null>(() =>
+    loadSessionState<AssessmentData>("brj_funnel_assessment")
+  );
+  const [prescription, setPrescription] = useState<any>(() =>
+    loadSessionState<any>("brj_funnel_prescription")
+  );
+  const [bandsClaimed, setBandsClaimed] = useState<boolean>(() =>
+    Boolean(loadSessionState<boolean>("brj_bands_claimed"))
+  );
   const [bandsSoldOut, setBandsSoldOut] = useState(false);
-  const [purchasedPrimary, setPurchasedPrimary] = useState(false);
-  const [purchasedDownsell, setPurchasedDownsell] = useState(false);
-  const [purchasedTwoPack, setPurchasedTwoPack] = useState(false);
-  const [twoPackTitles, setTwoPackTitles] = useState<string[]>([]);
-  const [purchasedAscension, setPurchasedAscension] = useState(false);
+  const [purchasedPrimary, setPurchasedPrimary] = useState<boolean>(() =>
+    Boolean(loadSessionState<boolean>("brj_purchased_primary"))
+  );
+  const [purchasedDownsell, setPurchasedDownsell] = useState<boolean>(() =>
+    Boolean(loadSessionState<boolean>("brj_purchased_downsell"))
+  );
+  const [purchasedTwoPack, setPurchasedTwoPack] = useState<boolean>(() =>
+    Boolean(loadSessionState<boolean>("brj_purchased_twopack"))
+  );
+  const [twoPackTitles, setTwoPackTitles] = useState<string[]>(() =>
+    loadSessionState<string[]>("brj_twopack_titles") || []
+  );
+  const [purchasedAscension, setPurchasedAscension] = useState<boolean>(() =>
+    Boolean(loadSessionState<boolean>("brj_purchased_ascension"))
+  );
+  const [coachingPlan, setCoachingPlan] = useState<"pif" | "in_house">(() =>
+    loadSessionState<"pif" | "in_house">("brj_coaching_plan") || "pif"
+  );
 
   // Check band inventory on mount
   useEffect(() => {
     fetch("/api/funnels/status")
-      .then((res) => res.json())
+      .then((res) => {
+        if (!res.ok) throw new Error("status unavailable");
+        return res.json();
+      })
       .then((data) => {
-        if (data.isSoldOut) {
+        if (data.isSoldOut || (typeof data.remaining === "number" && data.remaining <= 0)) {
           setBandsSoldOut(true);
         }
       })
-      .catch((e) => console.warn("[FunnelA] inventory probe warning:", e));
+      .catch((e) => console.warn("[FunnelA] inventory probe note:", e?.message));
   }, []);
 
   // Check URL params for checkout returns (?session_id=...&type=...)
@@ -51,26 +92,46 @@ export default function FunnelA() {
     if (params.get("session_id")) {
       if (type === "bands") {
         setBandsClaimed(true);
+        saveSessionState("brj_bands_claimed", true);
         setStep("matched_program");
       } else if (type === "primary_249") {
         setPurchasedPrimary(true);
+        saveSessionState("brj_purchased_primary", true);
         setStep("twopack_upsell");
       } else if (type === "downsell_199") {
         setPurchasedDownsell(true);
+        saveSessionState("brj_purchased_downsell", true);
         setStep("confirmation");
       } else if (type === "twopack_398") {
         setPurchasedTwoPack(true);
+        saveSessionState("brj_purchased_twopack", true);
         setStep("ascension");
       } else if (type === "ascension_3000") {
         setPurchasedAscension(true);
+        saveSessionState("brj_purchased_ascension", true);
         setStep("confirmation");
       }
     }
   }, []);
 
-  // Step numbering & metadata
+  // Authoritative fallback for matched program to guarantee UI never renders blank
+  const getResolvedMatchedProgram = (): ProgramSeriesItem => {
+    if (prescription?.matchedProgram) {
+      return prescription.matchedProgram;
+    }
+    if (assessmentData) {
+      const computed = evaluatePrescription(assessmentData);
+      return computed.matchedProgram;
+    }
+    // Default fallback to Program 7 (Performance Training)
+    return getProgramSeriesItem(7)!;
+  };
+
+  const matchedProgram = getResolvedMatchedProgram();
+
+  // Dynamic step numbering & metadata
+  const totalSteps = bandsSoldOut ? 4 : 5;
   let stepNumber = 1;
-  let totalSteps = 5;
   let stepLabel = "Fitness Assessment";
 
   if (step === "assessment") {
@@ -103,6 +164,8 @@ export default function FunnelA() {
   const handleAssessmentComplete = (data: AssessmentData, pres: any) => {
     setAssessmentData(data);
     setPrescription(pres);
+    saveSessionState("brj_funnel_assessment", data);
+    saveSessionState("brj_funnel_prescription", pres);
 
     // Rule: At 30 completed sales, Funnel A assessment routes directly to matched $249 product, bypassing bands
     if (bandsSoldOut) {
@@ -112,7 +175,9 @@ export default function FunnelA() {
     }
   };
 
-  const matchedProgram: ProgramSeriesItem | undefined = prescription?.matchedProgram;
+  const handleRestart = () => {
+    setStep("assessment");
+  };
 
   return (
     <FunnelShell
@@ -146,6 +211,7 @@ export default function FunnelA() {
           customerPhone={assessmentData?.phone}
           onAccept={() => {
             setBandsClaimed(true);
+            saveSessionState("brj_bands_claimed", true);
             setStep("matched_program");
           }}
           onDecline={() => setStep("matched_program")}
@@ -153,7 +219,7 @@ export default function FunnelA() {
       )}
 
       {/* 3. Assessment-Matched Program ($249) */}
-      {step === "matched_program" && matchedProgram && (
+      {step === "matched_program" && (
         <MatchedProgramStep
           funnelId="funnel_a"
           matchedProgram={matchedProgram}
@@ -161,6 +227,7 @@ export default function FunnelA() {
           customerName={assessmentData?.fullName}
           onAccept={() => {
             setPurchasedPrimary(true);
+            saveSessionState("brj_purchased_primary", true);
             setStep("twopack_upsell");
           }}
           onDecline={() => setStep("downsell")}
@@ -168,7 +235,7 @@ export default function FunnelA() {
       )}
 
       {/* 4. $199 Downsell (if $249 declined) */}
-      {step === "downsell" && matchedProgram && (
+      {step === "downsell" && (
         <DownsellStep
           funnelId="funnel_a"
           matchedProgram={matchedProgram}
@@ -176,6 +243,7 @@ export default function FunnelA() {
           customerName={assessmentData?.fullName}
           onAccept={() => {
             setPurchasedDownsell(true);
+            saveSessionState("brj_purchased_downsell", true);
             setStep("confirmation");
           }}
           onDecline={() => setStep("neutral_exit")}
@@ -183,14 +251,20 @@ export default function FunnelA() {
       )}
 
       {/* 5. Two-Program Upsell ($398.40) - only after $249 purchase */}
-      {step === "twopack_upsell" && matchedProgram && (
+      {step === "twopack_upsell" && (
         <TwoPackUpsellStep
           funnelId="funnel_a"
           purchasedProgramId={matchedProgram.id}
           customerEmail={assessmentData?.email}
           customerName={assessmentData?.fullName}
-          onAccept={(data) => {
+          onAccept={(data, selectedPrograms) => {
             setPurchasedTwoPack(true);
+            saveSessionState("brj_purchased_twopack", true);
+            if (selectedPrograms && selectedPrograms.length > 0) {
+              const titles = selectedPrograms.map((p) => p.title);
+              setTwoPackTitles(titles);
+              saveSessionState("brj_twopack_titles", titles);
+            }
             setStep("ascension");
           }}
           onDecline={() => setStep("ascension")}
@@ -204,8 +278,13 @@ export default function FunnelA() {
           gender={assessmentData?.gender || "Male"}
           customerEmail={assessmentData?.email}
           customerName={assessmentData?.fullName}
-          onAccept={() => {
+          onAccept={(orderData) => {
             setPurchasedAscension(true);
+            saveSessionState("brj_purchased_ascension", true);
+            if (orderData?.plan) {
+              setCoachingPlan(orderData.plan);
+              saveSessionState("brj_coaching_plan", orderData.plan);
+            }
             setStep("confirmation");
           }}
           onDecline={() => setStep("confirmation")}
@@ -227,6 +306,7 @@ export default function FunnelA() {
                 ? "Women’s Wellness Program"
                 : "Men’s Fitness Alliance"
               : undefined,
+            coachingPlan,
           }}
         />
       )}
@@ -237,7 +317,7 @@ export default function FunnelA() {
           funnelId="funnel_a"
           matchedProgram={matchedProgram}
           customerEmail={assessmentData?.email}
-          onRestart={() => setStep("assessment")}
+          onRestart={handleRestart}
         />
       )}
     </FunnelShell>

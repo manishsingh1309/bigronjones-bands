@@ -1,11 +1,11 @@
-import React, { useState } from "react";
-import { ShieldCheck, Lock, HelpCircle, ArrowLeft } from "lucide-react";
+import React, { useState, useEffect } from "react";
+import { ArrowLeft, Lock, ShieldCheck } from "lucide-react";
 
 interface FunnelShellProps {
   currentStep: number;
   totalSteps: number;
   stepLabel: string;
-  funnelTitle: string;
+  funnelTitle?: string;
   onBack?: () => void;
   children: React.ReactNode;
 }
@@ -14,40 +14,52 @@ export default function FunnelShell({
   currentStep,
   totalSteps,
   stepLabel,
-  funnelTitle,
+  funnelTitle = "BigRonJones® Command Center",
   onBack,
   children,
 }: FunnelShellProps) {
   const [legalModal, setLegalModal] = useState<"privacy" | "terms" | "refund" | null>(null);
+
   const progressPercent = Math.min(100, Math.round((currentStep / totalSteps) * 100));
 
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setLegalModal(null);
+    };
+    if (legalModal) {
+      window.addEventListener("keydown", handleKeyDown);
+    }
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [legalModal]);
+
   return (
-    <div className="min-h-screen flex flex-col bg-[#0A0D14] text-slate-100 font-sans selection:bg-[#F59E0B] selection:text-black">
-      {/* ── Top Header (Minimal, Zero Website Navigation Leaks) ───────────── */}
+    <div className="min-h-screen bg-[#0A0D14] text-slate-100 flex flex-col font-sans selection:bg-[#B31942] selection:text-white overflow-x-hidden">
+      {/* ── Strict Funnel Header (No Site Navigation) ──────────────────────── */}
       <header className="sticky top-0 z-40 bg-[#0A0D14]/95 backdrop-blur-md border-b border-slate-800/80 px-4 py-3 sm:px-6">
-        <div className="max-w-5xl mx-auto flex items-center justify-between gap-4">
-          <div className="flex items-center gap-3">
-            {onBack && currentStep > 1 && (
+        <div className="max-w-5xl mx-auto flex items-center justify-between gap-2">
+          {/* Brand & Optional Back */}
+          <div className="flex items-center gap-2 sm:gap-3 min-w-0">
+            {onBack && (
               <button
                 type="button"
                 onClick={onBack}
-                className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
+                className="p-2 min-h-[44px] min-w-[44px] rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors flex items-center justify-center cursor-pointer"
                 aria-label="Go back to previous step"
               >
                 <ArrowLeft className="w-5 h-5" />
               </button>
             )}
-            <div className="flex flex-col">
+            <div className="flex flex-col min-w-0">
               <span className="font-extrabold text-base sm:text-lg tracking-wider text-white">
                 BIGRONJONES<span className="text-[#F59E0B]">®</span>
               </span>
-              <span className="text-[10px] uppercase font-mono tracking-widest text-slate-400">
+              <span className="text-[10px] uppercase font-mono tracking-widest text-slate-400 truncate max-w-[150px] sm:max-w-none">
                 {funnelTitle}
               </span>
             </div>
           </div>
 
-          <div className="flex items-center gap-2 sm:gap-4 text-xs font-mono text-slate-300">
+          <div className="flex items-center gap-2 sm:gap-4 text-xs font-mono text-slate-300 shrink-0">
             <div className="hidden sm:flex items-center gap-1.5 bg-emerald-950/60 text-emerald-400 border border-emerald-800/50 px-2.5 py-1 rounded-full">
               <Lock className="w-3.5 h-3.5" />
               <span>256-Bit SSL Encrypted</span>
@@ -91,7 +103,7 @@ export default function FunnelShell({
             <button
               type="button"
               onClick={() => setLegalModal("privacy")}
-              className="hover:text-white transition-colors underline"
+              className="hover:text-white transition-colors underline cursor-pointer"
             >
               Privacy Policy
             </button>
@@ -99,7 +111,7 @@ export default function FunnelShell({
             <button
               type="button"
               onClick={() => setLegalModal("terms")}
-              className="hover:text-white transition-colors underline"
+              className="hover:text-white transition-colors underline cursor-pointer"
             >
               Terms of Use
             </button>
@@ -107,7 +119,7 @@ export default function FunnelShell({
             <button
               type="button"
               onClick={() => setLegalModal("refund")}
-              className="hover:text-white transition-colors underline"
+              className="hover:text-white transition-colors underline cursor-pointer"
             >
               Fulfillment & Refunds
             </button>
@@ -123,9 +135,13 @@ export default function FunnelShell({
         <div
           role="dialog"
           aria-modal="true"
+          onClick={() => setLegalModal(null)}
           className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm"
         >
-          <div className="bg-[#111622] border border-slate-700 rounded-2xl max-w-2xl w-full p-6 text-slate-200 max-h-[85vh] overflow-y-auto">
+          <div
+            onClick={(e) => e.stopPropagation()}
+            className="bg-[#111622] border border-slate-700 rounded-2xl max-w-2xl w-full p-6 text-slate-200 max-h-[85vh] overflow-y-auto"
+          >
             <div className="flex items-center justify-between pb-4 border-b border-slate-800">
               <h3 className="text-lg font-bold text-white capitalize">
                 {legalModal === "privacy" && "Privacy Notice & Data Security"}
@@ -135,7 +151,7 @@ export default function FunnelShell({
               <button
                 type="button"
                 onClick={() => setLegalModal(null)}
-                className="text-slate-400 hover:text-white text-lg font-bold p-1"
+                className="text-slate-400 hover:text-white text-lg font-bold p-1 cursor-pointer"
               >
                 ✕
               </button>
@@ -181,7 +197,7 @@ export default function FunnelShell({
               <button
                 type="button"
                 onClick={() => setLegalModal(null)}
-                className="px-4 py-2 bg-[#0A3161] hover:bg-[#1E40AF] text-white rounded-lg text-sm font-semibold"
+                className="px-4 py-2 bg-[#0A3161] hover:bg-[#1E40AF] text-white rounded-lg text-sm font-semibold cursor-pointer"
               >
                 Close
               </button>

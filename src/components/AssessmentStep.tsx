@@ -1,6 +1,6 @@
-import { evaluatePrescription } from "../lib/funnelEngine";
 import React, { useState } from "react";
-import { Target, ArrowRight, CheckCircle2, User, Mail, Phone, Dumbbell, Sparkles } from "lucide-react";
+import { Target, ArrowRight, CheckCircle2, User, Mail, Phone, Sparkles } from "lucide-react";
+import { evaluatePrescription } from "../lib/funnelEngine";
 
 export interface AssessmentData {
   gender: "Male" | "Female";
@@ -76,12 +76,16 @@ export default function AssessmentStep({
     e.preventDefault();
     setError(null);
 
-    if (!email || !email.includes("@")) {
+    const cleanEmail = email.trim().toLowerCase();
+    const cleanName = fullName.trim();
+    const cleanPhone = phone.trim();
+
+    if (!cleanEmail || !cleanEmail.includes("@")) {
       setError("Please provide a valid email address to receive your training prescription.");
       return;
     }
-    if (!fullName.trim()) {
-      setError("Please provide your name.");
+    if (!cleanName) {
+      setError("Please provide your full name.");
       return;
     }
 
@@ -92,14 +96,20 @@ export default function AssessmentStep({
       obstacle,
       environment,
       supportLevel,
-      fullName: fullName.trim(),
-      email: email.trim().toLowerCase(),
-      phone: phone.trim(),
+      fullName: cleanName,
+      email: cleanEmail,
+      phone: cleanPhone,
     };
 
     setLoading(true);
 
     try {
+      // Persist in sessionStorage immediately so state survives navigation
+      try {
+        sessionStorage.setItem("brj_funnel_assessment", JSON.stringify(payload));
+      } catch (e) {
+        console.warn("sessionStorage write note:", e);
+      }
 
       const res = await fetch("/api/funnels/assessment", {
         method: "POST",
@@ -112,16 +122,23 @@ export default function AssessmentStep({
         }),
       });
 
-      const data = await res.json();
-      if (!res.ok) {
-        throw new Error(data.error || "Failed to process prescription");
+      if (res.ok) {
+        const data = await res.json();
+        try {
+          sessionStorage.setItem("brj_funnel_prescription", JSON.stringify(data.prescription));
+        } catch {}
+        onComplete(payload, data.prescription);
+        return;
       }
 
-      onComplete(payload, data.prescription);
+      throw new Error(`Assessment returned status ${res.status}`);
     } catch (err: any) {
       console.warn("[AssessmentStep] API error, falling back to local prescription engine:", err);
       try {
         const localPrescription = evaluatePrescription(payload);
+        try {
+          sessionStorage.setItem("brj_funnel_prescription", JSON.stringify(localPrescription));
+        } catch {}
         onComplete(payload, localPrescription);
       } catch {
         setError(err?.message || "Connection error. Please try again.");
@@ -176,7 +193,7 @@ export default function AssessmentStep({
                 key={g}
                 type="button"
                 onClick={() => setGender(g)}
-                className={`py-3.5 px-4 rounded-xl font-bold text-sm sm:text-base transition-all flex items-center justify-center gap-2 border ${
+                className={`py-3.5 px-4 min-h-[48px] rounded-xl font-bold text-sm sm:text-base transition-all flex items-center justify-center gap-2 border cursor-pointer ${
                   gender === g
                     ? "bg-[#0A3161] text-white border-blue-500 ring-2 ring-blue-500/30 shadow-lg"
                     : "bg-slate-900/80 text-slate-300 border-slate-800 hover:border-slate-700"
@@ -203,7 +220,7 @@ export default function AssessmentStep({
                 key={g.label}
                 type="button"
                 onClick={() => setGoal(g.label)}
-                className={`p-4 rounded-xl text-left transition-all border flex flex-col justify-between ${
+                className={`p-4 min-h-[64px] rounded-xl text-left transition-all border flex flex-col justify-between cursor-pointer ${
                   goal === g.label
                     ? "bg-[#0A3161]/80 text-white border-blue-500 ring-2 ring-blue-500/20"
                     : "bg-slate-900/60 text-slate-300 border-slate-800 hover:border-slate-700"
@@ -235,7 +252,7 @@ export default function AssessmentStep({
                   key={lvl}
                   type="button"
                   onClick={() => setLevel(lvl)}
-                  className={`w-full py-3 px-4 rounded-xl font-medium text-sm text-left transition-all border flex items-center justify-between ${
+                  className={`w-full py-3.5 px-4 min-h-[48px] rounded-xl font-medium text-sm text-left transition-all border flex items-center justify-between cursor-pointer ${
                     level === lvl
                       ? "bg-[#0A3161] text-white border-blue-500"
                       : "bg-slate-900/60 text-slate-300 border-slate-800 hover:border-slate-700"
@@ -262,14 +279,14 @@ export default function AssessmentStep({
                   key={obs}
                   type="button"
                   onClick={() => setObstacle(obs)}
-                  className={`w-full py-2.5 px-3.5 rounded-lg text-xs font-medium text-left transition-all border flex items-center justify-between ${
+                  className={`w-full py-3 px-3.5 min-h-[44px] rounded-xl text-xs sm:text-sm font-medium text-left transition-all border flex items-center justify-between cursor-pointer ${
                     obstacle === obs
                       ? "bg-[#0A3161] text-white border-blue-500"
                       : "bg-slate-900/60 text-slate-300 border-slate-800 hover:border-slate-700"
                   }`}
                 >
                   <span>{obs}</span>
-                  {obstacle === obs && <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />}
+                  {obstacle === obs && <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />}
                 </button>
               ))}
             </div>
@@ -290,7 +307,7 @@ export default function AssessmentStep({
                 key={env}
                 type="button"
                 onClick={() => setEnvironment(env)}
-                className={`py-3 px-3 rounded-xl font-bold text-sm text-center transition-all border ${
+                className={`py-3.5 px-3 min-h-[48px] rounded-xl font-bold text-sm text-center transition-all border cursor-pointer ${
                   environment === env
                     ? "bg-[#0A3161] text-white border-blue-500"
                     : "bg-slate-900/60 text-slate-300 border-slate-800 hover:border-slate-700"
@@ -316,7 +333,7 @@ export default function AssessmentStep({
                 key={sup.label}
                 type="button"
                 onClick={() => setSupportLevel(sup.label)}
-                className={`w-full p-4 rounded-xl text-left transition-all border flex items-center justify-between ${
+                className={`w-full p-4 min-h-[60px] rounded-xl text-left transition-all border flex items-center justify-between cursor-pointer ${
                   supportLevel === sup.label
                     ? "bg-[#0A3161]/80 text-white border-blue-500 ring-2 ring-blue-500/20"
                     : "bg-slate-900/60 text-slate-300 border-slate-800 hover:border-slate-700"
@@ -352,7 +369,7 @@ export default function AssessmentStep({
                   placeholder="e.g. John Doe"
                   value={fullName}
                   onChange={(e) => setFullName(e.target.value)}
-                  className="w-full pl-10 pr-4 py-3 bg-slate-900 border border-slate-700 rounded-xl text-white text-sm focus:outline-none focus:border-blue-500"
+                  className="w-full pl-10 pr-4 py-3 bg-slate-900 border border-slate-700 rounded-xl text-white text-base sm:text-sm focus:outline-none focus:border-blue-500"
                 />
               </div>
             </div>
@@ -367,7 +384,7 @@ export default function AssessmentStep({
                   placeholder="john@example.com"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="w-full pl-10 pr-4 py-3 bg-slate-900 border border-slate-700 rounded-xl text-white text-sm focus:outline-none focus:border-blue-500"
+                  className="w-full pl-10 pr-4 py-3 bg-slate-900 border border-slate-700 rounded-xl text-white text-base sm:text-sm focus:outline-none focus:border-blue-500"
                 />
               </div>
             </div>
@@ -381,7 +398,7 @@ export default function AssessmentStep({
                   placeholder="(555) 000-0000"
                   value={phone}
                   onChange={(e) => setPhone(e.target.value)}
-                  className="w-full pl-10 pr-4 py-3 bg-slate-900 border border-slate-700 rounded-xl text-white text-sm focus:outline-none focus:border-blue-500"
+                  className="w-full pl-10 pr-4 py-3 bg-slate-900 border border-slate-700 rounded-xl text-white text-base sm:text-sm focus:outline-none focus:border-blue-500"
                 />
               </div>
             </div>
@@ -393,7 +410,7 @@ export default function AssessmentStep({
           <button
             type="submit"
             disabled={loading}
-            className="w-full sm:w-auto min-w-[320px] inline-flex items-center justify-center gap-3 px-8 py-4 bg-gradient-to-r from-[#0A3161] via-[#2563EB] to-[#1D4ED8] hover:from-[#1E40AF] hover:to-[#2563EB] text-white font-extrabold text-base uppercase tracking-wider rounded-xl shadow-xl hover:shadow-blue-500/20 transition-all disabled:opacity-50 cursor-pointer"
+            className="w-full sm:w-auto min-w-[320px] min-h-[54px] inline-flex items-center justify-center gap-3 px-8 py-4 bg-gradient-to-r from-[#0A3161] via-[#2563EB] to-[#1D4ED8] hover:from-[#1E40AF] hover:to-[#2563EB] text-white font-extrabold text-base uppercase tracking-wider rounded-xl shadow-xl hover:shadow-blue-500/20 transition-all disabled:opacity-50 cursor-pointer"
           >
             {loading ? (
               <span>CALCULATING PRESCRIPTION…</span>

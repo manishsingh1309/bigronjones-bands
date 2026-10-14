@@ -1,5 +1,5 @@
 import React from "react";
-import { CheckCircle2, Package, Dumbbell, Crown, ArrowRight, ShieldCheck, Mail } from "lucide-react";
+import { CheckCircle2, Package, Dumbbell, Crown, ArrowRight, ShieldCheck } from "lucide-react";
 
 interface ConfirmationStepProps {
   funnelId: "funnel_a" | "funnel_b";
@@ -10,6 +10,7 @@ interface ConfirmationStepProps {
     isDownsell?: boolean;
     twoPackTitles?: string[];
     coachingProgramTitle?: string;
+    coachingPlan?: "pif" | "in_house";
     totalPaid?: number;
   };
 }
@@ -20,9 +21,24 @@ export default function ConfirmationStep({
   orderSummary = {
     primaryProgramTitle: "Performance Training",
     hasBands: true,
-    totalPaid: 264,
   },
 }: ConfirmationStepProps) {
+  // Compute calculated total if not provided explicitly
+  const calculateTotal = () => {
+    if (typeof orderSummary.totalPaid === "number") return orderSummary.totalPaid;
+    let sum = 0;
+    if (orderSummary.hasBands) sum += 15;
+    if (orderSummary.isDownsell) sum += 199;
+    else if (orderSummary.primaryProgramTitle) sum += 249;
+    if (orderSummary.twoPackTitles && orderSummary.twoPackTitles.length > 0) sum += 398.40;
+    if (orderSummary.coachingProgramTitle) {
+      sum += orderSummary.coachingPlan === "in_house" ? 750 : 3000;
+    }
+    return sum;
+  };
+
+  const total = calculateTotal();
+
   return (
     <div className="w-full max-w-2xl mx-auto text-center">
       {/* ── Success Icon & Header ─────────────────────────────────────────── */}
@@ -41,63 +57,87 @@ export default function ConfirmationStep({
         <span className="block font-bold text-white mt-1 font-mono text-xs sm:text-sm">{customerEmail}</span>
       </p>
 
-      {/* ── What Happens Next Box ─────────────────────────────────────────── */}
+      {/* ── Itemized Order Summary Box ────────────────────────────────────── */}
       <div className="bg-[#111622] border border-slate-800 rounded-3xl p-6 sm:p-8 text-left shadow-2xl mb-8 space-y-6">
-        <h2 className="text-base font-bold text-white flex items-center gap-2 border-b border-slate-800 pb-3">
-          <ShieldCheck className="w-5 h-5 text-emerald-400" />
-          <span>Immediate Access & Fulfillment Next Steps</span>
-        </h2>
+        <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+          <h2 className="text-base font-bold text-white flex items-center gap-2">
+            <ShieldCheck className="w-5 h-5 text-emerald-400" />
+            <span>Itemized Order Summary</span>
+          </h2>
+          <span className="text-sm font-mono font-bold text-emerald-400">
+            Total Charged: ${total.toFixed(2)}
+          </span>
+        </div>
 
         <div className="space-y-4 text-xs sm:text-sm">
           {orderSummary.primaryProgramTitle && (
-            <div className="flex items-start gap-3 p-3.5 rounded-xl bg-slate-900 border border-slate-800">
-              <Dumbbell className="w-5 h-5 text-blue-400 shrink-0 mt-0.5" />
-              <div>
-                <div className="font-bold text-white">
-                  {orderSummary.primaryProgramTitle} {orderSummary.isDownsell ? "(DIY Version)" : "Package"}
+            <div className="flex items-start justify-between gap-3 p-3.5 rounded-xl bg-slate-900 border border-slate-800">
+              <div className="flex items-start gap-3">
+                <Dumbbell className="w-5 h-5 text-blue-400 shrink-0 mt-0.5" />
+                <div>
+                  <div className="font-bold text-white">
+                    {orderSummary.primaryProgramTitle} {orderSummary.isDownsell ? "(DIY Version)" : "Package"}
+                  </div>
+                  <p className="text-slate-400 text-xs mt-0.5">
+                    Your 8-video progression library is unlocked. Sign in with your email at <strong>bigronjones.com/auth/login</strong>.
+                  </p>
                 </div>
-                <p className="text-slate-400 text-xs mt-0.5">
-                  Your 8-video progression library is unlocked. Sign in at <strong>bigronjones.com/auth/login</strong> with your email to start day 1.
-                </p>
               </div>
+              <span className="font-mono font-bold text-white shrink-0">
+                ${orderSummary.isDownsell ? "199.00" : "249.00"}
+              </span>
             </div>
           )}
 
           {orderSummary.twoPackTitles && orderSummary.twoPackTitles.length > 0 && (
-            <div className="flex items-start gap-3 p-3.5 rounded-xl bg-slate-900 border border-slate-800">
-              <Dumbbell className="w-5 h-5 text-purple-400 shrink-0 mt-0.5" />
-              <div>
-                <div className="font-bold text-white">
-                  Additional Programs ({orderSummary.twoPackTitles.join(" & ")})
+            <div className="flex items-start justify-between gap-3 p-3.5 rounded-xl bg-slate-900 border border-slate-800">
+              <div className="flex items-start gap-3">
+                <Dumbbell className="w-5 h-5 text-purple-400 shrink-0 mt-0.5" />
+                <div>
+                  <div className="font-bold text-white">
+                    2-Program Expansion ({orderSummary.twoPackTitles.join(" & ")})
+                  </div>
+                  <p className="text-slate-400 text-xs mt-0.5">
+                    Both complementary training programs have been added to your member portal.
+                  </p>
                 </div>
-                <p className="text-slate-400 text-xs mt-0.5">
-                  Both complementary training programs have been added to your member portal.
-                </p>
               </div>
+              <span className="font-mono font-bold text-white shrink-0">$398.40</span>
             </div>
           )}
 
           {orderSummary.hasBands && (
-            <div className="flex items-start gap-3 p-3.5 rounded-xl bg-slate-900 border border-slate-800">
-              <Package className="w-5 h-5 text-amber-400 shrink-0 mt-0.5" />
-              <div>
-                <div className="font-bold text-white">Free Resistance Band Kit ($15 S&H)</div>
-                <p className="text-slate-400 text-xs mt-0.5">
-                  Your physical band kit has been assigned for fulfillment. Tracking information will be emailed as soon as the carrier scans your package.
-                </p>
+            <div className="flex items-start justify-between gap-3 p-3.5 rounded-xl bg-slate-900 border border-slate-800">
+              <div className="flex items-start gap-3">
+                <Package className="w-5 h-5 text-amber-400 shrink-0 mt-0.5" />
+                <div>
+                  <div className="font-bold text-white">Free Resistance Band Kit ($15 S&H)</div>
+                  <p className="text-slate-400 text-xs mt-0.5">
+                    Your physical band kit has been assigned for fulfillment. Tracking details will be dispatched upon courier dispatch.
+                  </p>
+                </div>
               </div>
+              <span className="font-mono font-bold text-white shrink-0">$15.00</span>
             </div>
           )}
 
           {orderSummary.coachingProgramTitle && (
-            <div className="flex items-start gap-3 p-3.5 rounded-xl bg-slate-900 border border-slate-800">
-              <Crown className="w-5 h-5 text-amber-400 shrink-0 mt-0.5" />
-              <div>
-                <div className="font-bold text-white">{orderSummary.coachingProgramTitle} ($3,000)</div>
-                <p className="text-slate-400 text-xs mt-0.5">
-                  Our team has been notified. Check your email for your confidential coaching intake questionnaire before your initial onboarding Zoom with Big Ron Jones.
-                </p>
+            <div className="flex items-start justify-between gap-3 p-3.5 rounded-xl bg-slate-900 border border-slate-800">
+              <div className="flex items-start gap-3">
+                <Crown className="w-5 h-5 text-amber-400 shrink-0 mt-0.5" />
+                <div>
+                  <div className="font-bold text-white">
+                    {orderSummary.coachingProgramTitle}
+                    {orderSummary.coachingPlan === "in_house" ? " (Monthly Plan)" : " (PIF)"}
+                  </div>
+                  <p className="text-slate-400 text-xs mt-0.5">
+                    Check your email for your confidential coaching questionnaire prior to your initial onboarding call with Ron.
+                  </p>
+                </div>
               </div>
+              <span className="font-mono font-bold text-white shrink-0">
+                {orderSummary.coachingPlan === "in_house" ? "$750.00 / mo" : "$3,000.00"}
+              </span>
             </div>
           )}
         </div>
@@ -106,7 +146,7 @@ export default function ConfirmationStep({
         <div className="pt-2">
           <a
             href="https://www.bigronjones.com/auth/login"
-            className="w-full py-4 px-6 bg-[#0A3161] hover:bg-[#1E40AF] text-white font-extrabold text-sm uppercase tracking-wider rounded-xl transition-all flex items-center justify-center gap-2"
+            className="w-full py-4 px-6 min-h-[52px] bg-[#0A3161] hover:bg-[#1E40AF] text-white font-extrabold text-sm uppercase tracking-wider rounded-xl transition-all flex items-center justify-center gap-2 cursor-pointer shadow-lg"
           >
             <span>ACCESS MY MEMBER PORTAL</span>
             <ArrowRight className="w-4 h-4" />
@@ -115,7 +155,7 @@ export default function ConfirmationStep({
       </div>
 
       <div className="text-xs text-slate-500 font-mono">
-        Need help? Contact support anytime at <span className="text-slate-400">RonJones@BigRonJones.com</span>
+        Need assistance? Contact support anytime at <span className="text-slate-400">RonJones@BigRonJones.com</span>
       </div>
     </div>
   );

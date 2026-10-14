@@ -1,5 +1,5 @@
 import React from "react";
-import { Check, Bookmark, ArrowRight, ShieldCheck, Dumbbell } from "lucide-react";
+import { Bookmark, Dumbbell, ArrowRight } from "lucide-react";
 import type { ProgramSeriesItem } from "../lib/programSeries";
 
 interface NeutralExitStepProps {
@@ -15,6 +15,15 @@ export default function NeutralExitStep({
   customerEmail,
   onRestart,
 }: NeutralExitStepProps) {
+  const handleRestart = () => {
+    try {
+      sessionStorage.removeItem("brj_funnel_assessment");
+      sessionStorage.removeItem("brj_funnel_prescription");
+      sessionStorage.removeItem("brj_funnel_orders");
+    } catch {}
+    if (onRestart) onRestart();
+  };
+
   return (
     <div className="w-full max-w-2xl mx-auto text-center">
       {/* ── Saved Prescription Icon ────────────────────────────────────────── */}
@@ -30,6 +39,11 @@ export default function NeutralExitStep({
       </h1>
       <p className="text-sm sm:text-base text-slate-300 max-w-lg mx-auto mb-8">
         Thank you for completing the BigRonJones® diagnostic assessment. You have chosen not to enroll in a training program today. No charges were made to any payment method.
+        {customerEmail && (
+          <span className="block text-xs font-mono text-slate-400 mt-2">
+            Prescription notification logged for: <strong className="text-white">{customerEmail}</strong>
+          </span>
+        )}
       </p>
 
       {/* ── Summary of Matched Program ─────────────────────────────────────── */}
@@ -70,8 +84,8 @@ export default function NeutralExitStep({
         {onRestart && (
           <button
             type="button"
-            onClick={onRestart}
-            className="w-full py-3.5 px-6 bg-slate-900 hover:bg-slate-800 border border-slate-700 text-white rounded-xl text-xs font-mono uppercase tracking-wider transition-colors"
+            onClick={handleRestart}
+            className="w-full py-3.5 px-6 min-h-[48px] bg-slate-900 hover:bg-slate-800 border border-slate-700 text-white rounded-xl text-xs font-mono uppercase tracking-wider transition-colors cursor-pointer"
           >
             Retake Diagnostic Assessment
           </button>
