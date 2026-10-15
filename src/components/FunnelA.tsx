@@ -41,6 +41,7 @@ function saveSessionState(key: string, val: any) {
 
 export default function FunnelA() {
   const [step, setStep] = useState<FunnelAStep>("assessment");
+  const [assessmentStarted, setAssessmentStarted] = useState(false);
   const [assessmentData, setAssessmentData] = useState<AssessmentData | null>(() =>
     loadSessionState<AssessmentData>("brj_funnel_assessment")
   );
@@ -185,8 +186,8 @@ export default function FunnelA() {
       totalSteps={totalSteps}
       stepLabel={stepLabel}
       funnelTitle="FITNESS DIAGNOSTIC ASSESSMENT"
-      ctaText={step === "assessment" ? "START ASSESSMENT" : undefined}
-      onCtaClick={step === "assessment" ? () => window.scrollTo({ top: 550, behavior: "smooth" }) : undefined}
+      ctaText={step === "assessment" && !assessmentStarted ? "START ASSESSMENT" : undefined}
+      onCtaClick={step === "assessment" && !assessmentStarted ? () => setAssessmentStarted(true) : undefined}
       onBack={
         step === "bands"
           ? () => setStep("assessment")
@@ -200,6 +201,8 @@ export default function FunnelA() {
         <AssessmentStep
           funnelId="funnel_a"
           initialData={assessmentData || undefined}
+          isStarted={assessmentStarted}
+          onStartChange={setAssessmentStarted}
           onComplete={handleAssessmentComplete}
         />
       )}

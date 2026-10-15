@@ -214,6 +214,7 @@ export default function FunnelB() {
         <AssessmentStep
           funnelId="funnel_b"
           initialData={assessmentData || undefined}
+          isStarted={true}
           onComplete={handleAssessmentComplete}
         />
       )}
