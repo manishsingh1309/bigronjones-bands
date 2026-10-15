@@ -389,7 +389,7 @@ export default function BandOfferStep({
                 value={state}
                 onChange={(e) => setState(e.target.value)}
                 placeholder="TX"
-                className="w-full px-3.5 py-3.5 rounded-xl border border-slate-300 bg-white text-slate-900 text-sm font-medium focus:border-[#0A3161] focus:ring-2 focus:ring-[#0A3161]/20 outline-none uppercase shadow-2xs"
+                className="w-full px-3.5 py-3.5 rounded-xl border border-slate-300 bg-white text-slate-900 text-base font-normal focus:border-[#0A3161] focus:ring-2 focus:ring-[#0A3161]/20 outline-none uppercase shadow-2xs"
               />
             </div>
 
@@ -442,6 +442,19 @@ export default function BandOfferStep({
               </>
             )}
           </button>
+
+          {/* Decline / Skip Option */}
+          <div className="text-center pt-3">
+            <button
+              type="button"
+              onClick={onDecline}
+              className="font-['DM_Mono'] text-xs font-semibold text-slate-400 hover:text-slate-700 uppercase tracking-widest underline underline-offset-4 cursor-pointer transition-colors"
+            >
+              {funnelId === "funnel_a"
+                ? "No thanks, skip equipment and view my matched prescription ($249) »"
+                : "No thanks, I already own bands — continue to mandatory fitness assessment »"}
+            </button>
+          </div>
         </form>
       </section>
     </div>

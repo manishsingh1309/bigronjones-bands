@@ -40,6 +40,7 @@ function saveSessionState(key: string, val: any) {
 
 export default function FunnelB() {
   const [step, setStep] = useState<FunnelBStep>("bands");
+  const [assessmentStarted, setAssessmentStarted] = useState(false);
   const [assessmentData, setAssessmentData] = useState<AssessmentData | null>(() =>
     loadSessionState<AssessmentData>("brj_funnel_assessment")
   );
@@ -183,8 +184,20 @@ export default function FunnelB() {
       totalSteps={totalSteps}
       stepLabel={stepLabel}
       funnelTitle="THE RESISTANCE PROTOCOL"
-      ctaText={step === "bands" ? "GET MY BANDS" : undefined}
-      onCtaClick={step === "bands" ? () => window.scrollTo({ top: 650, behavior: "smooth" }) : undefined}
+      ctaText={
+        step === "bands"
+          ? "GET MY BANDS"
+          : step === "assessment" && !assessmentStarted
+            ? "START ASSESSMENT"
+            : undefined
+      }
+      onCtaClick={
+        step === "bands"
+          ? () => window.scrollTo({ top: 650, behavior: "smooth" })
+          : step === "assessment" && !assessmentStarted
+            ? () => setAssessmentStarted(true)
+            : undefined
+      }
       onBack={
         step === "assessment" && !bandsSoldOut
           ? () => setStep("bands")
@@ -214,7 +227,8 @@ export default function FunnelB() {
         <AssessmentStep
           funnelId="funnel_b"
           initialData={assessmentData || undefined}
-          isStarted={true}
+          isStarted={assessmentStarted}
+          onStartChange={setAssessmentStarted}
           onComplete={handleAssessmentComplete}
         />
       )}
