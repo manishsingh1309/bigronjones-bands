@@ -59,6 +59,7 @@ export const GOAL_TO_PROGRAM_MAP: Record<string, { programId: number; complement
   "Get Stronger": { programId: 2, complementaryId: 4 },                 // Strength & Conditioning -> Lean Muscle Development
   "Improve Endurance": { programId: 3, complementaryId: 7 },            // Power & Endurance -> Performance Training
   "Improve Movement": { programId: 1, complementaryId: 5 },             // Movement Foundations -> Control & Consistency
+  "Improve Movement Quality": { programId: 1, complementaryId: 5 },     // Movement Foundations -> Control & Consistency
   "Develop Better Control": { programId: 5, complementaryId: 1 },       // Control & Consistency -> Movement Foundations
   "Improve Overall Conditioning": { programId: 6, complementaryId: 8 }, // Endurance & Conditioning -> Everyday Performance
 };
