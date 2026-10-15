@@ -317,7 +317,7 @@ export default function BandOfferStep({
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 placeholder="Marcus Vance"
-                className="w-full px-4 py-3.5 rounded-xl border border-slate-300 bg-white text-slate-900 text-sm font-medium focus:border-[#0A3161] focus:ring-2 focus:ring-[#0A3161]/20 outline-none shadow-2xs"
+                className="w-full px-4 py-3.5 rounded-xl border border-slate-300 bg-white text-slate-900 text-base font-normal focus:border-[#0A3161] focus:ring-2 focus:ring-[#0A3161]/20 outline-none shadow-2xs"
               />
             </div>
 
@@ -331,7 +331,7 @@ export default function BandOfferStep({
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="name@example.com"
-                className="w-full px-4 py-3.5 rounded-xl border border-slate-300 bg-white text-slate-900 text-sm font-medium focus:border-[#0A3161] focus:ring-2 focus:ring-[#0A3161]/20 outline-none shadow-2xs"
+                className="w-full px-4 py-3.5 rounded-xl border border-slate-300 bg-white text-slate-900 text-base font-normal focus:border-[#0A3161] focus:ring-2 focus:ring-[#0A3161]/20 outline-none shadow-2xs"
               />
             </div>
           </div>
@@ -345,7 +345,7 @@ export default function BandOfferStep({
               value={phone}
               onChange={(e) => setPhone(e.target.value)}
               placeholder="(555) 000-0000"
-              className="w-full px-4 py-3.5 rounded-xl border border-slate-300 bg-white text-slate-900 text-sm font-medium focus:border-[#0A3161] focus:ring-2 focus:ring-[#0A3161]/20 outline-none shadow-2xs"
+              className="w-full px-4 py-3.5 rounded-xl border border-slate-300 bg-white text-slate-900 text-base font-normal focus:border-[#0A3161] focus:ring-2 focus:ring-[#0A3161]/20 outline-none shadow-2xs"
             />
           </div>
 
@@ -359,7 +359,7 @@ export default function BandOfferStep({
               value={addressLine1}
               onChange={(e) => setAddressLine1(e.target.value)}
               placeholder="123 Performance Way, Apt 4B"
-              className="w-full px-4 py-3.5 rounded-xl border border-slate-300 bg-white text-slate-900 text-sm font-medium focus:border-[#0A3161] focus:ring-2 focus:ring-[#0A3161]/20 outline-none shadow-2xs"
+              className="w-full px-4 py-3.5 rounded-xl border border-slate-300 bg-white text-slate-900 text-base font-normal focus:border-[#0A3161] focus:ring-2 focus:ring-[#0A3161]/20 outline-none shadow-2xs"
             />
           </div>
 
@@ -374,7 +374,7 @@ export default function BandOfferStep({
                 value={city}
                 onChange={(e) => setCity(e.target.value)}
                 placeholder="Dallas"
-                className="w-full px-3.5 py-3.5 rounded-xl border border-slate-300 bg-white text-slate-900 text-sm font-medium focus:border-[#0A3161] focus:ring-2 focus:ring-[#0A3161]/20 outline-none shadow-2xs"
+                className="w-full px-3.5 py-3.5 rounded-xl border border-slate-300 bg-white text-slate-900 text-base font-normal focus:border-[#0A3161] focus:ring-2 focus:ring-[#0A3161]/20 outline-none shadow-2xs"
               />
             </div>
 
@@ -403,7 +403,7 @@ export default function BandOfferStep({
                 value={postalCode}
                 onChange={(e) => setPostalCode(e.target.value)}
                 placeholder="75001"
-                className="w-full px-3.5 py-3.5 rounded-xl border border-slate-300 bg-white text-slate-900 text-sm font-medium focus:border-[#0A3161] focus:ring-2 focus:ring-[#0A3161]/20 outline-none shadow-2xs"
+                className="w-full px-3.5 py-3.5 rounded-xl border border-slate-300 bg-white text-slate-900 text-base font-normal focus:border-[#0A3161] focus:ring-2 focus:ring-[#0A3161]/20 outline-none shadow-2xs"
               />
             </div>
           </div>
